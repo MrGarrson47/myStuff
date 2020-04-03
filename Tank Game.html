@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body onload="startGame();alignTanks()">
+    <script type="text/javascript">// so you've discovered that the way you "repeat" the cars with the frame count interval is flawed. a better way to do it would be to have the cars speedX moving continuosly, and then have the frame interval counter run IF the car has left the canvas. you will have to start the speedX first off than let the frame interval counter handle the repeating afterwards.
+      var gameArea;
+      var tank1;
+      var tank2;
+      var move= -5;
+      var move2= -5;
+      var move3= -5;
+      var move4= -5;
+      var bullets1=[];
+      var bullets2=[];
+      var health1=100;
+      var health2=100;
+      var h1=100;
+      var h2=100;
+      var car1=[];
+      var shootSound1;
+      var shootSound2;
+      var shootSound3;
+      var shootSound4;
+      var shootSound5;
+      var shootSound6;
+      var expl1;
+      var expl2;
+      var expl3;
+      var expl4;
+      var expl5;
+      var expl6;
+      var trackSnd1;
+      var trackSnd2;
+      var trackSnd3;
+      var trackSnd4;
+      var level=0;
+      var p1Ready;
+      var p2Ready;
+      var car1L;
+      var car2L;
+      var car3L;
+      var car1R;
+      var car2R;
+      var car3R;
+
+
+
+
+      function startGame(){
+        gameArea.start();
+        tank1= new Tank(400,300,480,300,480,400,400,400,400,300,430,260,450,260,450,330,460,340,460,360,450,370,430,370,420,360,420,340,430,330,430,260,400,300,390,300,390,400,400,400,390,310,395,305,400,310,390,330,395,325,400,330,390,350,395,345,400,350,390,370,395,365,400,370,390,390,395,385,400,390,480,300,490,300,490,400,480,400,480,310,485,305,490,310,480,330,485,325,490,330,480,350,485,345,490,350,480,370,485,365,490,370,480,390,485,385,490,390,400,300,410,310,430,310,450,310,470,310, 480,300,410,310,410,390,470,390,470,310,410,390,400,400,470,390,480,400,"red");
+        tank2= new Tank(400,300,480,300,480,400,400,400,400,300,430,140,450,140,450,70,460,60,460,40,450,30,430,30,420,40,420,60,430,70,430,140,400,300,390,300,390,400,400,400,390,305,395,310,400,305,390,325,395,330,400,325,390,345,395,350,400,345,390,365,395,370,400,365,390,385,395,390,400,385,480,300,490,300,490,400,480,400,480,305,485,310,490,305,480,325,485,330,490,325,480,345,485,350,490,345,480,365,485,370,490,365,480,385,485,390,490,385,400,300,410,310,430,310,450,310,470,310, 480,300,410,310,410,390,470,390,470,310,410,390,400,400,470,390,480,400,"blue");
+        bullets1=[new Bullet(100,100,110,90,120,100,120,130,100,130,100,100),new Bullet(100,100,110,90,120,100,120,130,100,130,100,100),new Bullet(100,100,110,90,120,100,120,130,100,130,100,100)];
+        bullets2=[new Bullet(100,100,120,100,120,130,110,140,100,130,100,100),new Bullet(100,100,120,100,120,130,110,140,100,130,100,100),new Bullet(100,100,120,100,120,130,110,140,100,130,100,100)];
+        car1L= new Car1Left(700,260,720,260,730,270,690,270,700,260,707,260,707,270,690,270,670,270,670,280,740,280,740,270,690,270,675,280,675,285,685,285,685,280,675,280,677,282,5,2,735,280,735,285,725,285,725,280,735,280,727,282,5,2);
+        car2L= new Car2Left(400,260,410,260,420,270,390,270,400,260,403,260,403,270,390,270,380,270,380,280,425,280,425,270,390,270,385,280,385,285,390,285,390,280,385,280,386,282,2,2,420,280,420,285,415,285,415,280,420,280,416,282,2,2);
+        car3L= new Car3Left(600,250,500,250,500,260,600,260,600,250,520,250,520,260,530,250,530,260,540,250,540,260,550,250,550,260,560,250,560,260,570,250,570,260,580,250,580,260,590,250,590,260,500,260,500,280,600,280,600,260,500,260,505,280,505,285,520,285,520,280,505,280,510,282,5,2,595,280,595,285,580,285,580,280,595,280,585,282,5,2);
+        car1R= new Car1Right(100,310,120,310,130,320,90,320,100,310,113,310,113,320,90,320,80,320,80,330,150,330,150,320,90,320,85,330,85,335,95,335,95,330,85,330,87,332,5,2,145,330,145,335,135,335,135,330,145,330,137,332,5,2);
+        car2R= new Car2Right(400,310,410,310,420,320,390,320,400,310,407,310,407,320,390,320,385,320,385,330,430,330,430,320,390,320,390,330,390,335,395,335,395,330,390,330,391,332,2,2,425,330,425,335,420,335,420,330,425,330,421,332,2,2);
+        car3R= new Car3Right(300,300,200,300,200,310,300,310,300,300,210,300,210,310,220,300,220,310,230,300,230,310,240,300,240,310,250,300,250,310,260,300,260,310,270,300,270,310,280,300,280,310,200,310,200,330,300,330,300,310,200,310,205,330,205,335,220,335,220,330,205,330,210,332,5,2,295,330,295,335,280,335,280,330,295,330,285,332,5,2);
+        shootSound1= new sound("Tank Firing.mp3");
+        shootSound2= new sound("Tank Firing.mp3");
+        shootSound3= new sound("Tank Firing.mp3");
+        shootSound4= new sound("Tank Firing.mp3");
+        shootSound5= new sound("Tank Firing.mp3");
+        shootSound6= new sound("Tank Firing.mp3");
+        expl1= new sound("Blast.mp3");
+        expl2= new sound("Blast.mp3");
+        expl3= new sound("Blast.mp3");
+        expl4= new sound("Blast.mp3");
+        expl5= new sound("Blast.mp3");
+        expl6= new sound("Blast.mp3");
+        trackSnd1=new sound("Tank.mp3");
+        trackSnd2=new sound("Tank.mp3");
+        trackSnd3=new sound("Tank.mp3");
+        trackSnd4=new sound("Tank.mp3");
+      }
+      function sound(src){
+        this.sound=document.createElement("audio");
+        this.sound.src=src;
+        this.sound.setAttribute("preload","auto");
+        this.sound.setAttribute("controls","none");
+        this.sound.style.display="none";
+        document.body.appendChild(this.sound);
+        this.play= function(){
+          this.sound.play();
+        }
+        this.stop= function(){
+          this.sound.pause();
+        }
+        this.currentTime=function(n){
+          this.sound.currentTime=n;
+        }
+      }
+      function alignTanks(){
+			tank1.y1+=200,tank1.y2+=200,tank1.y3+=200,tank1.y4+=200,tank1.y5+=200,tank1.y6+=200,tank1.y7+=200,tank1.y8+=200,tank1.y9+=200,tank1.y10+=200,tank1.y11+=200,tank1.y12+=200,tank1.y13+=200,tank1.y14+=200,tank1.y15+=200,tank1.y16+=200,tank1.y17+=200,tank1.y18+=200,tank1.y19+=200,tank1.y20+=200,tank1.y21+=200,tank1.y22+=200,tank1.y23+=200,tank1.y24+=200,tank1.y25+=200,tank1.y26+=200,tank1.y27+=200,tank1.y28+=200,tank1.y29+=200,tank1.y30+=200,tank1.y31+=200,tank1.y32+=200,tank1.y33+=200,tank1.y34+=200,tank1.y35+=200,tank1.y36+=200,tank1.y37+=200,tank1.y38+=200,tank1.y39+=200,tank1.y40+=200,tank1.y41+=200,tank1.y42+=200,tank1.y43+=200,tank1.y44+=200,tank1.y45+=200,tank1.y46+=200,tank1.y47+=200,tank1.y48+=200,tank1.y49+=200,tank1.y50+=200,tank1.y51+=200,tank1.y52+=200,tank1.y53+=200,tank1.y54+=200,tank1.y55+=200,tank1.y56+=200,tank1.y57+=200,tank1.y58+=200,tank1.y59+=200,tank1.y60+=200,tank1.y61+=200,tank1.y62+=200,tank1.y63+=200,tank1.y64+=200,tank1.y65+=200,tank1.y66+=200,tank1.y67+=200,tank1.y68+=200;
+			tank2.y1+=-300,tank2.y2+=-300,tank2.y3+=-300,tank2.y4+=-300,tank2.y5+=-300,tank2.y17+=-300,tank2.y18+=-300,tank2.y19+=-300,tank2.y20+=-300,tank2.y21+=-300,tank2.y22+=-300,tank2.y23+=-300,tank2.y24+=-300,tank2.y25+=-300,tank2.y26+=-300,tank2.y27+=-300,tank2.y28+=-300,tank2.y29+=-300,tank2.y30+=-300,tank2.y31+=-300,tank2.y32+=-300,tank2.y33+=-300,tank2.y34+=-300,tank2.y35+=-300,tank2.y36+=-300,tank2.y37+=-300,tank2.y38+=-300,tank2.y39+=-300,tank2.y40+=-300,tank2.y41+=-300,tank2.y42+=-300,tank2.y43+=-300,tank2.y44+=-300,tank2.y45+=-300,tank2.y46+=-300,tank2.y47+=-300,tank2.y48+=-300,tank2.y49+=-300,tank2.y50+=-300,tank2.y51+=-300,tank2.y52+=-300,tank2.y53+=-300,tank2.y54+=-300,tank2.y55+=-300,tank2.y56+=-300,tank2.y57+=-300,tank2.y58+=-300,tank2.y59+=-300,tank2.y60+=-300,tank2.y61+=-300,tank2.y62+=-300,tank2.y63+=-300,tank2.y64+=-300,tank2.y65+=-300,tank2.y66+=-300,tank2.y67+=-300,tank2.y68+=-300;
+      bullets1[0].x1=700,bullets1[0].x2=710,bullets1[0].x3=720,bullets1[0].x4=720,bullets1[0].x5=700,bullets1[0].x6=700,bullets1[0].y1=550,bullets1[0].y2=540,bullets1[0].y3=550,bullets1[0].y4=580,bullets1[0].y5=580,bullets1[0].y6=550;
+      bullets1[1].x1=725,bullets1[1].x2=735,bullets1[1].x3=745,bullets1[1].x4=745,bullets1[1].x5=725,bullets1[1].x6=725,bullets1[1].y1=550,bullets1[1].y2=540,bullets1[1].y3=550,bullets1[1].y4=580,bullets1[1].y5=580,bullets1[1].y6=550;
+      bullets1[2].x1=750,bullets1[2].x2=760,bullets1[2].x3=770,bullets1[2].x4=770,bullets1[2].x5=750,bullets1[2].x6=750,bullets1[2].y1=550,bullets1[2].y2=540,bullets1[2].y3=550,bullets1[2].y4=580,bullets1[2].y5=580,bullets1[2].y6=550;
+      bullets2[0].x1=80,bullets2[0].x2=100,bullets2[0].x3=100,bullets2[0].x4=90,bullets2[0].x5=80,bullets2[0].x6=80,bullets2[0].y1=20,bullets2[0].y2=20,bullets2[0].y3=50,bullets2[0].y4=60,bullets2[0].y5=50,bullets2[0].y6=20;
+      bullets2[1].x1=55,bullets2[1].x2=75,bullets2[1].x3=75,bullets2[1].x4=65,bullets2[1].x5=55,bullets2[1].x6=55,bullets2[1].y1=20,bullets2[1].y2=20,bullets2[1].y3=50,bullets2[1].y4=60,bullets2[1].y5=50,bullets2[1].y6=20;
+      bullets2[2].x1=30,bullets2[2].x2=50,bullets2[2].x3=50,bullets2[2].x4=40,bullets2[2].x5=30,bullets2[2].x6=30,bullets2[2].y1=20,bullets2[2].y2=20,bullets2[2].y3=50,bullets2[2].y4=60,bullets2[2].y5=50,bullets2[2].y6=20;
+      car1L.x1=900,car1L.x2=920,car1L.x3=930,car1L.x4=890,car1L.x5=900,car1L.x6=907,car1L.x7=907,car1L.x8=890,car1L.x9=870,car1L.x10=870,car1L.x11=940,car1L.x12=940,car1L.x13=890,car1L.x14=875,car1L.x15=875,car1L.x16=885,car1L.x17=885,car1L.x18=875,car1L.x21=935,car1L.x22=935,car1L.x23=925,car1L.x24=925,car1L.x25=935;
+      car2L.x1=1000,car2L.x2=1010,car2L.x3=1020,car2L.x4=990,car2L.x5=1000,car2L.x6=1003,car2L.x7=1003,car2L.x8=990,car2L.x9=980,car2L.x10=980,car2L.x11=1025,car2L.x12=1025,car2L.x13=990,car2L.x14=985,car2L.x15=985,car2L.x16=990,car2L.x17=990,car2L.x18=985,car2L.x21=1020,car2L.x22=1020,car2L.x23=1015,car2L.x24=1015,car2L.x25=1020;
+      car3L.x1=1000,car3L.x2=900,car3L.x3=900,car3L.x4=1000,car3L.x5=1000,car3L.x6=920,car3L.x7=920,car3L.x8=930,car3L.x9=930,car3L.x10=940,car3L.x11=940,car3L.x12=950,car3L.x13=950,car3L.x14=960,car3L.x15=960,car3L.x16=970,car3L.x17=970,car3L.x18=980,car3L.x19=980,car3L.x20=990,car3L.x21=990,car3L.x22=900,car3L.x23=900,car3L.x24=1000,car3L.x25=1000,car3L.x26=900,car3L.x27=905,car3L.x28=905,car3L.x29=920,car3L.x30=920,car3L.x31=905,car3L.x33=910,car3L.x34=995,car3L.x35=995,car3L.x36=980,car3L.x37=980,car3L.x38=995;
+      car1R.x1=100,car1R.x2=120,car1R.x3=130,car1R.x4=90,car1R.x5=100,car1R.x6=113,car1R.x7=113,car1R.x8=90,car1R.x9=80,car1R.x10=80,car1R.x11=150,car1R.x12=150,car1R.x13=90,car1R.x14=85,car1R.x15=85,car1R.x16=95,car1R.x17=95,car1R.x18=85,car1R.x21=145,car1R.x22=145,car1R.x23=135,car1R.x24=135,car1R.x25=145;
+      car2R.x1=400,car2R.x2=410,car2R.x3=420,car2R.x4=390,car2R.x5=400,car2R.x6=407,car2R.x7=407,car2R.x8=390,car2R.x9=385,car2R.x10=385,car2R.x11=430,car2R.x12=430,car2R.x13=390,car2R.x14=390,car2R.x15=390,car2R.x16=395,car2R.x17=395,car2R.x18=390,car2R.x21=425,car2R.x22=425,car2R.x23=420,car2R.x24=420,car2R.x25=425;
+      car3R.x1=300,car3R.x2=200,car3R.x3=200,car3R.x4=300,car3R.x5=300,car3R.x6=210,car3R.x7=210,car3R.x8=220,car3R.x9=220,car3R.x10=230,car3R.x11=230,car3R.x12=240,car3R.x13=240,car3R.x14=250,car3R.x15=250,car3R.x16=260,car3R.x17=260,car3R.x18=270,car3R.x19=270,car3R.x20=280,car3R.x21=280,car3R.x22=200,car3R.x23=200,car3R.x24=300,car3R.x25=300,car3R.x26=200,car3R.x27=205,car3R.x28=205,car3R.x29=220,car3R.x30=220,car3R.x31=205,car3R.x34=295,car3R.x35=295,car3R.x36=280,car3R.x37=280,car3R.x38=295;
+		}
+      function moveTracks1(){
+        tank1.y21+=move,tank1.y22+=move,tank1.y23+=move,tank1.y24+=move,tank1.y25+=move,tank1.y26+=move,tank1.y27+=move,tank1.y28+=move,tank1.y29+=move,tank1.y30+=move,tank1.y31+=move,tank1.y32+=move,tank1.y33+=move,tank1.y34+=move,tank1.y35+=move;
+        tank1.y40+=move2,tank1.y41+=move2,tank1.y42+=move2,tank1.y43+=move2,tank1.y44+=move2,tank1.y45+=move2,tank1.y46+=move2,tank1.y47+=move2,tank1.y48+=move2,tank1.y49+=move2,tank1.y50+=move2,tank1.y51+=move2,tank1.y52+=move2,tank1.y53+=move2,tank1.y54+=move2;
+        if(tank1.y22<515 || tank1.y54>585){
+        move= -move;
+        move2= -move2;
+      }
+      }
+      function moveTracks2(){
+        tank2.y21+=move3,tank2.y22+=move3,tank2.y23+=move3,tank2.y24+=move3,tank2.y25+=move3,tank2.y26+=move3,tank2.y27+=move3,tank2.y28+=move3,tank2.y29+=move3,tank2.y30+=move3,tank2.y31+=move3,tank2.y32+=move3,tank2.y33+=move3,tank2.y34+=move3,tank2.y35+=move3;
+        tank2.y40+=move4,tank2.y41+=move4,tank2.y42+=move4,tank2.y43+=move4,tank2.y44+=move4,tank2.y45+=move4,tank2.y46+=move4,tank2.y47+=move4,tank2.y48+=move4,tank2.y49+=move4,tank2.y50+=move4,tank2.y51+=move4,tank2.y52+=move4,tank2.y53+=move4,tank2.y54+=move4;
+        if(tank2.y22<15 || tank2.y54>95){
+        move3= -move3;
+        move4= -move4;
+      }
+      }
+      var gameArea={
+        canvas: document.createElement("canvas"),
+        road: function(){
+          ctx=gameArea.context;
+          if(level===1){
+
+          //black part of road.
+          ctx.fillStyle="#302B24";
+          ctx.fillRect(0,250,800,100);
+          //middle divider, white.
+          ctx.fillStyle="white";
+          ctx.fillRect(0,298,800,5);
+          //yellow lines of the road.
+          ctx.fillStyle="yellow";
+          ctx.fillRect(0,255,800,2.5);
+          ctx.fillRect(0,342.5,800,2.5);
+        }
+        },
+        background: function(){
+          ctx=gameArea.context;
+          if(level===0){
+            ctx.beginPath();
+            ctx.fillStyle="black";
+            ctx.fillRect(0,0,800,600);
+            ctx.fillStyle="grey";
+            ctx.fillRect(10,200,780,200);
+            ctx.strokeStyle="yellow";
+            ctx.strokeRect(10,200,780,200);
+            ctx.fillStyle="black";
+            ctx.font="15px 'Helvetica',sans serif";
+            ctx.fillText("Welcome to the Tank Game!",320,215);
+            ctx.fillText("Destroy the enemy player's",320,235);
+            ctx.fillText("tank before they destroy",320,255);
+            ctx.fillText("yours! Press the A/right ",320,275);
+            ctx.fillText("arrow to get ready!",320,295);
+            //player markers.
+            ctx.fillStyle="red";
+            ctx.font="50px 'Helvetica',sans serif";
+            ctx.fillText("P1",410,460);
+            ctx.fillStyle="blue";
+            ctx.font="50px 'Helvetica',sans serif";
+            ctx.fillText("P2",410,180);
+            //player 1 text.
+            ctx.fillStyle="red";
+            ctx.font="30px 'Helvetica',sans serif";
+            ctx.fillText("Player 1 controls:",15,245);
+            ctx.fillStyle="black";
+            ctx.font="15px 'Helvetica',sans serif";
+            ctx.fillText("Left arrow to move tank left",15,280);
+            ctx.fillText("Right arrow to move tank right",15,300);
+            ctx.fillText("Up arrow to shoot",15,320);
+            //player 2 text.
+            ctx.fillStyle="blue";
+            ctx.font="30px 'Helvetica',sans serif";
+            ctx.fillText("Player 2 controls:",550,245);
+            ctx.fillStyle="black";
+            ctx.font="15px 'Helvetica',sans serif";
+            ctx.fillText("A to move tank left",650,280);
+            ctx.fillText("D to move tank right",650,300);
+            ctx.fillText("W to shoot",650,320);
+            //player 1 ready.
+            if(gameArea.bulletP1 && gameArea.bulletP1[39]){
+              p1Ready=true;
+            }
+            if(gameArea.bulletP1 && gameArea.bulletP1[37]){
+              p1Ready=false;
+            }
+            if(p1Ready){
+              ctx.beginPath();
+              ctx.strokeStyle="red";
+              ctx.strokeRect(15,340,200,50);
+              ctx.fillStyle="red";
+              ctx.fillRect(15,340,200,50);
+              ctx.fillStyle="white";
+              ctx.font="30px 'Helvetica',sans serif";
+              ctx.fillText("P1 is Ready!",30,375);
+              ctx.stroke();
+            }
+            //player 2 ready.
+            if(gameArea.bulletP2 && gameArea.bulletP2[68]){
+              p2Ready=true;
+            }
+            if(gameArea.bulletP2 && gameArea.bulletP2[65]){
+              p2Ready=false;
+            }
+            if(p2Ready){
+              ctx.beginPath();
+              ctx.strokeStyle="blue";
+              ctx.strokeRect(585,340,200,50);
+              ctx.fillStyle="blue";
+              ctx.fillRect(585,340,200,50);
+              ctx.fillStyle="white";
+              ctx.font="30px 'Helvetica',sans serif";
+              ctx.fillText("P2 is Ready!",600,375);
+              ctx.stroke();
+            }
+            if(p1Ready && p2Ready && everyInterval(50,gameArea.frameNoStart)){
+              level=1;
+              p1Ready=false,p2Ready=false;
+            }
+          }
+          if(level===1){
+          ctx.fillStyle="#AF7D5F";
+          ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+          ctx.fillStyle="white";
+          ctx.fillRect(20,0,100,20);
+          ctx.fillRect(680,580,100,20);
+          ctx.fillStyle="green";
+          ctx.strokeStyle="black";
+          ctx.strokeRect(20,0,100,20);
+          ctx.fillRect(20,0,h2,20);
+          ctx.strokeRect(680,580,100,20);
+          ctx.fillRect(680,580,h1,20);
+          ctx.stroke();
+          ctx.fillStyle="black";
+          ctx.font="20px 'Helvetica',sans serif";
+          ctx.fillText(health2,25,15);
+          ctx.fillText(health1,740,600);
+          p1Ready=false,p2Ready=false;
+          ctx.fillStyle="#A5861B"; /*"#9E7156";*/
+          var sandY1=2;
+          var sandY2=2;
+          for(var i=0;i<150;i++){
+            sandY1+=4;
+          ctx.fillRect(0,sandY1,800,2);
+        }
+        }
+        if(level===2){
+          ctx.fillStyle="black";
+          ctx.fillRect(0,0,800,600);
+          ctx.fillStyle="white";
+          ctx.font="30px 'Helvetica',sans serif";
+          ctx.fillText("Press spacebar to replay",220,360);
+          if(health1<=0){
+            ctx.fillStyle="blue";
+            ctx.font="60px 'Helvetica',sans serif";
+            ctx.fillText("Player 2 Wins!",200,300);
+          }
+          if(health2<=0){
+            ctx.fillStyle="red";
+            ctx.font="60px 'Helvetica',sans serif";
+            ctx.fillText("Player 1 Wins!",200,300);
+          }
+          bullets1[0].x1=700,bullets1[0].x2=710,bullets1[0].x3=720,bullets1[0].x4=720,bullets1[0].x5=700,bullets1[0].x6=700,bullets1[0].y1=550,bullets1[0].y2=540,bullets1[0].y3=550,bullets1[0].y4=580,bullets1[0].y5=580,bullets1[0].y6=550;
+          bullets1[1].x1=725,bullets1[1].x2=735,bullets1[1].x3=745,bullets1[1].x4=745,bullets1[1].x5=725,bullets1[1].x6=725,bullets1[1].y1=550,bullets1[1].y2=540,bullets1[1].y3=550,bullets1[1].y4=580,bullets1[1].y5=580,bullets1[1].y6=550;
+          bullets1[2].x1=750,bullets1[2].x2=760,bullets1[2].x3=770,bullets1[2].x4=770,bullets1[2].x5=750,bullets1[2].x6=750,bullets1[2].y1=550,bullets1[2].y2=540,bullets1[2].y3=550,bullets1[2].y4=580,bullets1[2].y5=580,bullets1[2].y6=550;
+          bullets2[0].x1=80,bullets2[0].x2=100,bullets2[0].x3=100,bullets2[0].x4=90,bullets2[0].x5=80,bullets2[0].x6=80,bullets2[0].y1=20,bullets2[0].y2=20,bullets2[0].y3=50,bullets2[0].y4=60,bullets2[0].y5=50,bullets2[0].y6=20;
+          bullets2[1].x1=55,bullets2[1].x2=75,bullets2[1].x3=75,bullets2[1].x4=65,bullets2[1].x5=55,bullets2[1].x6=55,bullets2[1].y1=20,bullets2[1].y2=20,bullets2[1].y3=50,bullets2[1].y4=60,bullets2[1].y5=50,bullets2[1].y6=20;
+          bullets2[2].x1=30,bullets2[2].x2=50,bullets2[2].x3=50,bullets2[2].x4=40,bullets2[2].x5=30,bullets2[2].x6=30,bullets2[2].y1=20,bullets2[2].y2=20,bullets2[2].y3=50,bullets2[2].y4=60,bullets2[2].y5=50,bullets2[2].y6=20;
+          bullets1[0].speedY=0;
+          bullets1[1].speedY=0;
+          bullets1[2].speedY=0;
+          bullets2[0].speedY=0;
+          bullets2[1].speedY=0;
+          bullets2[2].speedY=0;
+        }
+        if(gameArea.tankKeys1 && gameArea.tankKeys1[32] && level===2){
+          health1=100;
+          health2=100;
+          h1=100;
+          h2=100;
+          level=0;
+        }
+        },
+        start: function(){
+        this.canvas.width=800;
+        this.canvas.height=600;
+        this.context=this.canvas.getContext("2d");
+        this.frameNoCL1=2;
+        this.frameNoCL2=2;
+        this.frameNoCL3=2;
+        this.frameNoCR1=2;
+        this.frameNoCR2=2;
+        this.frameNoCR3=2;
+        this.frameNoStart=2;
+
+        document.body.insertBefore(this.canvas,document.body.childNodes[0]);
+        this.interval=setInterval(updateGameArea,20);
+        //listener for tank1, movement.
+        window.addEventListener("keydown",function(e){
+          gameArea.tankKeys1=(gameArea.tankKeys1 || []);
+          gameArea.tankKeys1[e.keyCode]=true;
+        })
+        window.addEventListener("keyup",function(){
+          gameArea.tankKeys1=false;
+        })
+        //listener for bullet, tank1.
+        window.addEventListener("keydown",function(e){
+          gameArea.bulletP1=(gameArea.bulletP1 || []);
+          gameArea.bulletP1[e.keyCode]=true;
+        })
+        window.addEventListener("keyup",function(){
+          gameArea.bulletP1=(gameArea.bulletP1 || []);
+          gameArea.bulletP1=false;
+        })
+
+        //listener for tank2, movement.
+        window.addEventListener("keydown",function(e){
+          gameArea.tankKeys2=(gameArea.tankKeys2 || []);
+          gameArea.tankKeys2[e.keyCode]=true;
+        })
+        window.addEventListener("keyup",function(){
+          gameArea.tankKeys2=false;
+        })
+        //listener for bullet, tank2.
+        window.addEventListener("keydown",function(e){
+          gameArea.bulletP2=(gameArea.bulletP2 || []);
+          gameArea.bulletP2[e.keyCode]=true;
+        })
+        window.addEventListener("keyup",function(){
+          gameArea.bulletP2=(gameArea.bulletP2 || []);
+          gameArea.bulletP2=false;
+        })
+      },
+        clear: function(){
+          this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+        },
+        crashWithP2: function(bullet,tx1,tx2,ty1,ty2){
+          this.tx1=tx1;
+          this.tx2=tx2;
+          this.ty1=ty1;
+          this.ty2=ty2;
+          var tankLeft=this.tx1;
+          var tankRight=this.tx2;
+          var tankTop=this.ty1;
+          var tankBot=this.ty2;
+          var bulletLeft=bullet.x1;
+          var bulletRight=bullet.x3;
+          var bulletTop=bullet.y2;
+          var bulletBot=bullet.y4;
+          var crash=false;
+
+          if(bulletRight>tankLeft && bulletLeft<tankRight && bulletTop<tankBot){
+            crash=true;
+          }
+          return crash;
+        },
+        crashWithP1: function(bullet,tx1,tx2,ty1,ty2){
+          this.tx1=tx1;
+          this.tx2=tx2;
+          this.ty1=ty1;
+          this.ty2=ty2;
+          var tankLeft=this.tx1;
+          var tankRight=this.tx2;
+          var tankTop=this.ty1;
+          var tankBot=this.ty2;
+          var bulletLeft=bullet.x1;
+          var bulletRight=bullet.x3;
+          var bulletTop=bullet.y4;
+          var bulletBot=bullet.y2;
+          var crash=false;
+
+          if(bulletRight>tankLeft && bulletLeft<tankRight && bulletTop>tankBot){
+            crash=true;
+          }
+          return crash;
+        },
+        crashWithCar(bullet,cx1,cx2,cy1,cy2){
+          this.cx1=cx1;
+          this.cx2=cx2;
+          this.cy1=cy1;
+          this.cy2=cy2;
+          var carLeft=this.cx1;
+          var carRight=this.cx2;
+          var carTop=this.cy1;
+          var carBot=this.cy2;
+          var bulletLeft=bullet.x1;
+          var bulletRight=bullet.x3;
+          var bulletTop=bullet.y2;
+          var bulletBot=bullet.y4;
+          crash=false;
+          if(bulletTop<carBot && bulletBot>carTop && bulletLeft<carRight && bulletRight>carLeft){
+            crash=true;}
+            return crash;
+        },
+        didDamageT2: function(){
+          health2-= 10;
+          h2-= 10;
+        },
+        didDamageT1: function(){
+          health1-= 10;
+          h1-= 10;
+
+        }
+
+      }
+      function Car1Left(x1,y1,x2,y2,x3,y3,x4,y4,x5,y5,x6,y6,x7,y7,x8,y8,x9,y9,x10,y10,x11,y11,x12,y12,x13,y13,x14,y14,x15,y15,x16,y16,x17,y17,x18,y18,x19,y19,x20,y20,x21,y21,x22,y22,x23,y23,x24,y24,x25,y25,x26,y26,x27,y27){
+        this.x1=x1,this.y1=y1;
+        this.x2=x2,this.y2=y2;
+        this.x3=x3,this.y3=y3;
+        this.x4=x4,this.y4=y4;
+        this.x5=x5,this.y5=y5;
+        this.x6=x6,this.y6=y6;
+        this.x7=x7,this.y7=y7;
+        this.x8=x8,this.y8=y8;
+        this.x9=x9,this.y9=y9;
+        this.x10=x10,this.y10=y10;
+        this.x11=x11,this.y11=y11;
+        this.x12=x12,this.y12=y12;
+        this.x13=x13,this.y13=y13;
+        this.x14=x14,this.y14=y14;
+        this.x15=x15,this.y15=y15;
+        this.x16=x16,this.y16=y16;
+        this.x17=x17,this.y17=y17;
+        this.x18=x18,this.y18=y18;
+        this.x19=x19,this.y19=y19;
+        this.x20=x20,this.y20=y20;
+        this.x21=x21,this.y21=y21;
+        this.x22=x22,this.y22=y22;
+        this.x23=x23,this.y23=y23;
+        this.x24=x24,this.y24=y24;
+        this.x25=x25,this.y25=y25;
+        this.x26=x26,this.y26=y26;
+        this.x27=x27,this.y27=y27;
+        this.speedX=0;
+        this.update=function(){
+          ctx=gameArea.context;
+          ctx.beginPath();
+          //car1 going left.
+          //the top of the car.
+          ctx.fillStyle="grey";
+          ctx.strokeStyle="blue";
+          ctx.moveTo(this.x1,this.y1);
+          ctx.lineTo(this.x2,this.y2);
+          ctx.lineTo(this.x3,this.y3);
+          ctx.lineTo(this.x4,this.y4);
+          ctx.lineTo(this.x5,this.y5);
+          ctx.moveTo(this.x6,this.y6);
+          ctx.lineTo(this.x7,this.y7);
+          ctx.fill();
+          ctx.stroke();
+          //body of the car.
+          ctx.beginPath();
+          ctx.fillStyle="blue";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x8,this.y8);
+          ctx.lineTo(this.x9,this.y9);
+          ctx.lineTo(this.x10,this.y10);
+          ctx.lineTo(this.x11,this.y11);
+          ctx.lineTo(this.x12,this.y12);
+          ctx.lineTo(this.x13,this.y13);
+          ctx.fill();
+          ctx.stroke();
+          //left wheel of the car.
+          ctx.beginPath();
+          ctx.fillStyle="black";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x14,this.y14);
+          ctx.lineTo(this.x15,this.y15);
+          ctx.lineTo(this.x16,this.y16);
+          ctx.lineTo(this.x17,this.y17);
+          ctx.lineTo(this.x18,this.y18);
+          ctx.fill();
+          ctx.stroke();
+          //right wheel of the car.
+          ctx.beginPath();
+          ctx.fillStyle="black";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x21,this.y21);
+          ctx.lineTo(this.x22,this.y22);
+          ctx.lineTo(this.x23,this.y23);
+          ctx.lineTo(this.x24,this.y24);
+          ctx.lineTo(this.x25,this.y25);
+          ctx.fill();
+          ctx.stroke();
+        }
+        this.newPos=function(){
+          this.x1+=this.speedX,this.x2+=this.speedX,this.x3+=this.speedX,this.x4+=this.speedX,this.x5+=this.speedX,this.x6+=this.speedX,this.x7+=this.speedX,this.x8+=this.speedX,this.x9+=this.speedX,this.x10+=this.speedX,this.x11+=this.speedX,this.x12+=this.speedX,this.x13+=this.speedX,this.x14+=this.speedX,this.x15+=this.speedX,this.x16+=this.speedX,this.x17+=this.speedX,this.x18+=this.speedX,this.x19+=this.speedX,this.x20+=this.speedX,this.x21+=this.speedX,this.x22+=this.speedX,this.x23+=this.speedX,this.x24+=this.speedX,this.x25+=this.speedX,this.x26+=this.speedX,this.x27+=this.speedX;
+        }
+        this.resetPos=function(){
+          this.x1=900,this.x2=920,this.x3=930,this.x4=890,this.x5=900,this.x6=907,this.x7=907,this.x8=890,this.x9=870,this.x10=870,this.x11=940,this.x12=940,this.x13=890,this.x14=875,this.x15=875,this.x16=885,this.x17=885,this.x18=875,this.x21=935,this.x22=935,this.x23=925,this.x24=925,this.x25=935;
+        }
+      }
+      function Car2Left(x1,y1,x2,y2,x3,y3,x4,y4,x5,y5,x6,y6,x7,y7,x8,y8,x9,y9,x10,y10,x11,y11,x12,y12,x13,y13,x14,y14,x15,y15,x16,y16,x17,y17,x18,y18,x19,y19,x20,y20,x21,y21,x22,y22,x23,y23,x24,y24,x25,y25,x26,y26,x27,y27){
+        this.x1=x1,this.y1=y1;
+        this.x2=x2,this.y2=y2;
+        this.x3=x3,this.y3=y3;
+        this.x4=x4,this.y4=y4;
+        this.x5=x5,this.y5=y5;
+        this.x6=x6,this.y6=y6;
+        this.x7=x7,this.y7=y7;
+        this.x8=x8,this.y8=y8;
+        this.x9=x9,this.y9=y9;
+        this.x10=x10,this.y10=y10;
+        this.x11=x11,this.y11=y11;
+        this.x12=x12,this.y12=y12;
+        this.x13=x13,this.y13=y13;
+        this.x14=x14,this.y14=y14;
+        this.x15=x15,this.y15=y15;
+        this.x16=x16,this.y16=y16;
+        this.x17=x17,this.y17=y17;
+        this.x18=x18,this.y18=y18;
+        this.x19=x19,this.y19=y19;
+        this.x20=x20,this.y20=y20;
+        this.x21=x21,this.y21=y21;
+        this.x22=x22,this.y22=y22;
+        this.x23=x23,this.y23=y23;
+        this.x24=x24,this.y24=y24;
+        this.x25=x25,this.y25=y25;
+        this.x26=x26,this.y26=y26;
+        this.x27=x27,this.y27=y27;
+        this.update=function(){
+          ctx=gameArea.context;
+          //car 2 going left.
+          //top of the car.
+          ctx.beginPath();
+          ctx.fillStyle="grey";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x1,this.y1);
+          ctx.lineTo(this.x2,this.y2);
+          ctx.lineTo(this.x3,this.y3);
+          ctx.lineTo(this.x4,this.y4);
+          ctx.lineTo(this.x5,this.y5);
+          ctx.moveTo(this.x6,this.y6);
+          ctx.lineTo(this.x7,this.y7);
+          ctx.fill();
+          ctx.stroke();
+          //body of the car.
+          ctx.beginPath();
+          ctx.strokeStyle="black";
+          ctx.fillStyle="yellow";
+          ctx.moveTo(this.x8,this.y8);
+          ctx.lineTo(this.x9,this.y9);
+          ctx.lineTo(this.x10,this.y10);
+          ctx.lineTo(this.x11,this.y11);
+          ctx.lineTo(this.x12,this.y12);
+          ctx.lineTo(this.x13,this.y13);
+          ctx.fill();
+          ctx.stroke();
+          //left wheel of the car.
+          ctx.beginPath();
+          ctx.fillStyle="black";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x14,this.y14);
+          ctx.lineTo(this.x15,this.y15);
+          ctx.lineTo(this.x16,this.y16);
+          ctx.lineTo(this.x17,this.y17);
+          ctx.lineTo(this.x18,this.y18);
+          ctx.fill();
+          ctx.stroke();
+          //right wheel of the car.
+          ctx.beginPath();
+          ctx.fillStyle="black";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x21,this.y21);
+          ctx.lineTo(this.x22,this.y22);
+          ctx.lineTo(this.x23,this.y23);
+          ctx.lineTo(this.x24,this.y24);
+          ctx.lineTo(this.x25,this.y25);
+          ctx.fill();
+          ctx.stroke();
+        }
+        this.newPos=function(){
+          this.x1+=this.speedX,this.x2+=this.speedX,this.x3+=this.speedX,this.x4+=this.speedX,this.x5+=this.speedX,this.x6+=this.speedX,this.x7+=this.speedX,this.x8+=this.speedX,this.x9+=this.speedX,this.x10+=this.speedX,this.x11+=this.speedX,this.x12+=this.speedX,this.x13+=this.speedX,this.x14+=this.speedX,this.x15+=this.speedX,this.x16+=this.speedX,this.x17+=this.speedX,this.x18+=this.speedX,this.x19+=this.speedX,this.x20+=this.speedX,this.x21+=this.speedX,this.x22+=this.speedX,this.x23+=this.speedX,this.x24+=this.speedX,this.x25+=this.speedX,this.x26+=this.speedX,this.x27+=this.speedX;
+        }
+        this.resetPos=function(){
+          car2L.x1=1000,car2L.x2=1010,car2L.x3=1020,car2L.x4=990,car2L.x5=1000,car2L.x6=1003,car2L.x7=1003,car2L.x8=990,car2L.x9=980,car2L.x10=980,car2L.x11=1025,car2L.x12=1025,car2L.x13=990,car2L.x14=985,car2L.x15=985,car2L.x16=990,car2L.x17=990,car2L.x18=985,car2L.x21=1020,car2L.x22=1020,car2L.x23=1015,car2L.x24=1015,car2L.x25=1020;
+        }
+      }
+      function Car3Left(x1,y1,x2,y2,x3,y3,x4,y4,x5,y5,x6,y6,x7,y7,x8,y8,x9,y9,x10,y10,x11,y11,x12,y12,x13,y13,x14,y14,x15,y15,x16,y16,x17,y17,x18,y18,x19,y19,x20,y20,x21,y21,x22,y22,x23,y23,x24,y24,x25,y25,x26,y26,x27,y27,x28,y28,x29,y29,x30,y30,x31,y31,x32,y32,x33,y33,x34,y34,x35,y35,x36,y36,x37,y37,x38,y38,x39,y39,x40,y40,x41,y41,x42,y42,x43,y43,x44,y44){
+        this.x1=x1,this.y1=y1;
+        this.x2=x2,this.y2=y2;
+        this.x3=x3,this.y3=y3;
+        this.x4=x4,this.y4=y4;
+        this.x5=x5,this.y5=y5;
+        this.x6=x6,this.y6=y6;
+        this.x7=x7,this.y7=y7;
+        this.x8=x8,this.y8=y8;
+        this.x9=x9,this.y9=y9;
+        this.x10=x10,this.y10=y10;
+        this.x11=x11,this.y11=y11;
+        this.x12=x12,this.y12=y12;
+        this.x13=x13,this.y13=y13;
+        this.x14=x14,this.y14=y14;
+        this.x15=x15,this.y15=y15;
+        this.x16=x16,this.y16=y16;
+        this.x17=x17,this.y17=y17;
+        this.x18=x18,this.y18=y18;
+        this.x19=x19,this.y19=y19;
+        this.x20=x20,this.y20=y20;
+        this.x21=x21,this.y21=y21;
+        this.x22=x22,this.y22=y22;
+        this.x23=x23,this.y23=y23;
+        this.x24=x24,this.y24=y24;
+        this.x25=x25,this.y25=y25;
+        this.x26=x26,this.y26=y26;
+        this.x27=x27,this.y27=y27;
+        this.x28=x28,this.y28=y28;
+        this.x29=x29,this.y29=y29;
+        this.x30=x30,this.y30=y30;
+        this.x31=x31,this.y31=y31;
+        this.x32=x32,this.y32=y32;
+        this.x33=x33,this.y33=y33;
+        this.x34=x34,this.y34=y34;
+        this.x35=x35,this.y35=y35;
+        this.x36=x36,this.y36=y36;
+        this.x37=x37,this.y37=y37;
+        this.x38=x38,this.y38=y38;
+        this.x39=x39,this.y39=y39;
+        this.x40=x40,this.y40=y40;
+        this.update=function(){
+          ctx=gameArea.context;
+          //car 3 going left.
+          //top of the bus.
+          ctx.beginPath();
+          ctx.fillStyle="grey";
+          ctx.strokeStyle="green";
+          ctx.moveTo(this.x1,this.y1);
+          ctx.lineTo(this.x2,this.y2);
+          ctx.lineTo(this.x3,this.y3);
+          ctx.lineTo(this.x4,this.y4);
+          ctx.lineTo(this.x5,this.y5);
+          ctx.moveTo(this.x6,this.y6);
+          ctx.lineTo(this.x7,this.y7);
+          ctx.moveTo(this.x8,this.y8);
+          ctx.lineTo(this.x9,this.y9);
+          ctx.moveTo(this.x10,this.y10);
+          ctx.lineTo(this.x11,this.y11);
+          ctx.moveTo(this.x12,this.y12);
+          ctx.lineTo(this.x13,this.y13);
+          ctx.moveTo(this.x14,this.y14);
+          ctx.lineTo(this.x15,this.y15);
+          ctx.moveTo(this.x16,this.y16);
+          ctx.lineTo(this.x17,this.y17);
+          ctx.moveTo(this.x18,this.y18);
+          ctx.lineTo(this.x19,this.y19);
+          ctx.moveTo(this.x20,this.y20);
+          ctx.lineTo(this.x21,this.y21);
+          ctx.fill();
+          ctx.stroke();
+          //body of the bus.
+          ctx.beginPath();
+          ctx.fillStyle="green";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x22,this.y22);
+          ctx.lineTo(this.x23,this.y23);
+          ctx.lineTo(this.x24,this.y24);
+          ctx.lineTo(this.x25,this.y25);
+          ctx.lineTo(this.x26,this.y26);
+          ctx.fill();
+          ctx.stroke();
+          //left wheel of the bus.
+          ctx.beginPath();
+          ctx.fillStyle="black";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x27,this.y27);
+          ctx.lineTo(this.x28,this.y28);
+          ctx.lineTo(this.x29,this.y29);
+          ctx.lineTo(this.x30,this.y30);
+          ctx.lineTo(this.x31,this.y31);
+          ctx.fill();
+          ctx.stroke();
+          //right wheel of the bus.
+          ctx.beginPath();
+          ctx.fillStyle="black";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x34,this.y34);
+          ctx.lineTo(this.x35,this.y35);
+          ctx.lineTo(this.x36,this.y36);
+          ctx.lineTo(this.x37,this.y37);
+          ctx.lineTo(this.x38,this.y38);
+          ctx.fill();
+          ctx.stroke();
+        }
+        this.newPos=function(){
+          this.x1+=this.speedX,this.x2+=this.speedX,this.x3+=this.speedX,this.x4+=this.speedX,this.x5+=this.speedX,this.x6+=this.speedX,this.x7+=this.speedX,this.x8+=this.speedX,this.x9+=this.speedX,this.x10+=this.speedX,this.x11+=this.speedX,this.x12+=this.speedX,this.x13+=this.speedX,this.x14+=this.speedX,this.x15+=this.speedX,this.x16+=this.speedX,this.x17+=this.speedX,this.x18+=this.speedX,this.x19+=this.speedX,this.x20+=this.speedX,this.x21+=this.speedX,this.x22+=this.speedX,this.x23+=this.speedX,this.x24+=this.speedX,this.x25+=this.speedX,this.x26+=this.speedX,this.x27+=this.speedX,this.x28+=this.speedX,this.x29+=this.speedX,this.x30+=this.speedX,this.x31+=this.speedX,this.x34+=this.speedX,this.x35+=this.speedX,this.x36+=this.speedX,this.x37+=this.speedX,this.x38+=this.speedX;
+        }
+        this.resetPos=function(){
+          this.x1=1000,this.x2=900,this.x3=900,this.x4=1000,this.x5=1000,this.x6=920,this.x7=920,this.x8=930,this.x9=930,this.x10=940,this.x11=940,this.x12=950,this.x13=950,this.x14=960,this.x15=960,this.x16=970,this.x17=970,this.x18=980,this.x19=980,this.x20=990,this.x21=990,this.x22=900,this.x23=900,this.x24=1000,this.x25=1000,this.x26=900,this.x27=905,this.x28=905,this.x29=920,this.x30=920,this.x31=905,this.x33=910,this.x34=995,this.x35=995,this.x36=980,this.x37=980,this.x38=995;
+        }
+      }
+      function Car1Right(x1,y1,x2,y2,x3,y3,x4,y4,x5,y5,x6,y6,x7,y7,x8,y8,x9,y9,x10,y10,x11,y11,x12,y12,x13,y13,x14,y14,x15,y15,x16,y16,x17,y17,x18,y18,x19,y19,x20,y20,x21,y21,x22,y22,x23,y23,x24,y24,x25,y25,x26,y26,x27,y27){
+        this.x1=x1,this.y1=y1;
+        this.x2=x2,this.y2=y2;
+        this.x3=x3,this.y3=y3;
+        this.x4=x4,this.y4=y4;
+        this.x5=x5,this.y5=y5;
+        this.x6=x6,this.y6=y6;
+        this.x7=x7,this.y7=y7;
+        this.x8=x8,this.y8=y8;
+        this.x9=x9,this.y9=y9;
+        this.x10=x10,this.y10=y10;
+        this.x11=x11,this.y11=y11;
+        this.x12=x12,this.y12=y12;
+        this.x13=x13,this.y13=y13;
+        this.x14=x14,this.y14=y14;
+        this.x15=x15,this.y15=y15;
+        this.x16=x16,this.y16=y16;
+        this.x17=x17,this.y17=y17;
+        this.x18=x18,this.y18=y18;
+        this.x19=x19,this.y19=y19;
+        this.x20=x20,this.y20=y20;
+        this.x21=x21,this.y21=y21;
+        this.x22=x22,this.y22=y22;
+        this.x23=x23,this.y23=y23;
+        this.x24=x24,this.y24=y24;
+        this.x25=x25,this.y25=y25;
+        this.x26=x26,this.y26=y26;
+        this.x27=x27,this.y27=y27;
+        this.update=function(){
+          ctx=gameArea.context;
+          //car1 going right.
+          //top of the car.
+          ctx.beginPath();
+          ctx.fillStyle="grey";
+          ctx.strokeStyle="blue";
+          ctx.moveTo(this.x1,this.y1);
+          ctx.lineTo(this.x2,this.y2);
+          ctx.lineTo(this.x3,this.y3);
+          ctx.lineTo(this.x4,this.y4);
+          ctx.lineTo(this.x5,this.y5);
+          ctx.moveTo(this.x6,this.y6);
+          ctx.lineTo(this.x7,this.y7);
+          ctx.fill();
+          ctx.stroke();
+          //body of the car.
+          ctx.beginPath();
+          ctx.fillStyle="blue";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x8,this.y8);
+          ctx.lineTo(this.x9,this.y9);
+          ctx.lineTo(this.x10,this.y10);
+          ctx.lineTo(this.x11,this.y11);
+          ctx.lineTo(this.x12,this.y12);
+          ctx.lineTo(this.x13,this.y13);
+          ctx.fill();
+          ctx.stroke();
+          //left wheel of the car.
+          ctx.beginPath();
+          ctx.fillStyle="black";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x14,this.y14);
+          ctx.lineTo(this.x15,this.y15);
+          ctx.lineTo(this.x16,this.y16);
+          ctx.lineTo(this.x17,this.y17);
+          ctx.lineTo(this.x18,this.y18);
+          ctx.fill();
+          ctx.stroke();
+          //right wheel of the car.
+          ctx.beginPath();
+          ctx.fillStyle="black";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x21,this.y21);
+          ctx.lineTo(this.x22,this.y22);
+          ctx.lineTo(this.x23,this.y23);
+          ctx.lineTo(this.x24,this.y24);
+          ctx.lineTo(this.x25,this.y25);
+          ctx.fill();
+          ctx.stroke();
+        }
+        this.newPos=function(){
+          this.x1+=this.speedX,this.x2+=this.speedX,this.x3+=this.speedX,this.x4+=this.speedX,this.x5+=this.speedX,this.x6+=this.speedX,this.x7+=this.speedX,this.x8+=this.speedX,this.x9+=this.speedX,this.x10+=this.speedX,this.x11+=this.speedX,this.x12+=this.speedX,this.x13+=this.speedX,this.x14+=this.speedX,this.x15+=this.speedX,this.x16+=this.speedX,this.x17+=this.speedX,this.x18+=this.speedX,this.x19+=this.speedX,this.x20+=this.speedX,this.x21+=this.speedX,this.x22+=this.speedX,this.x23+=this.speedX,this.x24+=this.speedX,this.x25+=this.speedX,this.x26+=this.speedX,this.x27+=this.speedX;
+        }
+        this.resetPos=function(){
+          this.x1= 20,this.x2= 40,this.x3= 50,this.x4= 10,this.x5= 20,this.x6= 33,this.x7= 33,this.x8= 10,this.x9= 0,this.x10= 0,this.x11= 70,this.x12= 70,this.x13= 10,this.x14= 5,this.x15= 5,this.x16= 15,this.x17= 15,this.x18= 5,this.x21= 65,this.x22= 65,this.x23= 55,this.x24= 55,this.x25= 65;
+        }
+      }
+      function Car2Right(x1,y1,x2,y2,x3,y3,x4,y4,x5,y5,x6,y6,x7,y7,x8,y8,x9,y9,x10,y10,x11,y11,x12,y12,x13,y13,x14,y14,x15,y15,x16,y16,x17,y17,x18,y18,x19,y19,x20,y20,x21,y21,x22,y22,x23,y23,x24,y24,x25,y25,x26,y26,x27,y27){
+        this.x1=x1,this.y1=y1;
+        this.x2=x2,this.y2=y2;
+        this.x3=x3,this.y3=y3;
+        this.x4=x4,this.y4=y4;
+        this.x5=x5,this.y5=y5;
+        this.x6=x6,this.y6=y6;
+        this.x7=x7,this.y7=y7;
+        this.x8=x8,this.y8=y8;
+        this.x9=x9,this.y9=y9;
+        this.x10=x10,this.y10=y10;
+        this.x11=x11,this.y11=y11;
+        this.x12=x12,this.y12=y12;
+        this.x13=x13,this.y13=y13;
+        this.x14=x14,this.y14=y14;
+        this.x15=x15,this.y15=y15;
+        this.x16=x16,this.y16=y16;
+        this.x17=x17,this.y17=y17;
+        this.x18=x18,this.y18=y18;
+        this.x19=x19,this.y19=y19;
+        this.x20=x20,this.y20=y20;
+        this.x21=x21,this.y21=y21;
+        this.x22=x22,this.y22=y22;
+        this.x23=x23,this.y23=y23;
+        this.x24=x24,this.y24=y24;
+        this.x25=x25,this.y25=y25;
+        this.x26=x26,this.y26=y26;
+        this.x27=x27,this.y27=y27;
+        this.update=function(){
+          ctx=gameArea.context;
+          //car 2 going right;
+          //top of the car.
+          ctx.beginPath();
+          ctx.fillStyle="grey";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x1,this.y1);
+          ctx.lineTo(this.x2,this.y2);
+          ctx.lineTo(this.x3,this.y3);
+          ctx.lineTo(this.x4,this.y4);
+          ctx.lineTo(this.x5,this.y5);
+          ctx.moveTo(this.x6,this.y6);
+          ctx.lineTo(this.x7,this.y7);
+          ctx.fill();
+          ctx.stroke();
+          //body of the car.
+          ctx.beginPath();
+          ctx.fillStyle="yellow";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x8,this.y8);
+          ctx.lineTo(this.x9,this.y9);
+          ctx.lineTo(this.x10,this.y10);
+          ctx.lineTo(this.x11,this.y11);
+          ctx.lineTo(this.x12,this.y12);
+          ctx.lineTo(this.x13,this.y13);
+          ctx.fill();
+          ctx.stroke();
+          //left wheel of the car.
+          ctx.beginPath();
+          ctx.fillStyle="black";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x14,this.y14);
+          ctx.lineTo(this.x15,this.y15);
+          ctx.lineTo(this.x16,this.y16);
+          ctx.lineTo(this.x17,this.y17);
+          ctx.lineTo(this.x18,this.y18);
+          ctx.fill();
+          ctx.stroke();
+          //right wheel of the car.
+          ctx.beginPath();
+          ctx.fillStyle="black";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x21,this.y21);
+          ctx.lineTo(this.x22,this.y22);
+          ctx.lineTo(this.x23,this.y23);
+          ctx.lineTo(this.x24,this.y24);
+          ctx.lineTo(this.x25,this.y25);
+          ctx.fill();
+          ctx.stroke();
+        }
+        this.newPos=function(){
+          this.x1+=this.speedX,this.x2+=this.speedX,this.x3+=this.speedX,this.x4+=this.speedX,this.x5+=this.speedX,this.x6+=this.speedX,this.x7+=this.speedX,this.x8+=this.speedX,this.x9+=this.speedX,this.x10+=this.speedX,this.x11+=this.speedX,this.x12+=this.speedX,this.x13+=this.speedX,this.x14+=this.speedX,this.x15+=this.speedX,this.x16+=this.speedX,this.x17+=this.speedX,this.x18+=this.speedX,this.x19+=this.speedX,this.x20+=this.speedX,this.x21+=this.speedX,this.x22+=this.speedX,this.x23+=this.speedX,this.x24+=this.speedX,this.x25+=this.speedX,this.x26+=this.speedX,this.x27+=this.speedX;
+        }
+        this.resetPos=function(){
+          this.x1=15,this.x2=25,this.x3=35,this.x4=5,this.x5=15,this.x6=22,this.x7=22,this.x8=5,this.x9=0,this.x10=0,this.x11=45,this.x12=45,this.x13=5,this.x14=5,this.x15=5,this.x16=10,this.x17=10,this.x18=5,this.x21=40,this.x22=40,this.x23=35,this.x24=35,this.x25=40;
+        }
+      }
+      function Car3Right(x1,y1,x2,y2,x3,y3,x4,y4,x5,y5,x6,y6,x7,y7,x8,y8,x9,y9,x10,y10,x11,y11,x12,y12,x13,y13,x14,y14,x15,y15,x16,y16,x17,y17,x18,y18,x19,y19,x20,y20,x21,y21,x22,y22,x23,y23,x24,y24,x25,y25,x26,y26,x27,y27,x28,y28,x29,y29,x30,y30,x31,y31,x32,y32,x33,y33,x34,y34,x35,y35,x36,y36,x37,y37,x38,y38,x39,y39,x40,y40){
+        this.x1=x1,this.y1=y1;
+        this.x2=x2,this.y2=y2;
+        this.x3=x3,this.y3=y3;
+        this.x4=x4,this.y4=y4;
+        this.x5=x5,this.y5=y5;
+        this.x6=x6,this.y6=y6;
+        this.x7=x7,this.y7=y7;
+        this.x8=x8,this.y8=y8;
+        this.x9=x9,this.y9=y9;
+        this.x10=x10,this.y10=y10;
+        this.x11=x11,this.y11=y11;
+        this.x12=x12,this.y12=y12;
+        this.x13=x13,this.y13=y13;
+        this.x14=x14,this.y14=y14;
+        this.x15=x15,this.y15=y15;
+        this.x16=x16,this.y16=y16;
+        this.x17=x17,this.y17=y17;
+        this.x18=x18,this.y18=y18;
+        this.x19=x19,this.y19=y19;
+        this.x20=x20,this.y20=y20;
+        this.x21=x21,this.y21=y21;
+        this.x22=x22,this.y22=y22;
+        this.x23=x23,this.y23=y23;
+        this.x24=x24,this.y24=y24;
+        this.x25=x25,this.y25=y25;
+        this.x26=x26,this.y26=y26;
+        this.x27=x27,this.y27=y27;
+        this.x28=x28,this.y28=y28;
+        this.x29=x29,this.y29=y29;
+        this.x30=x30,this.y30=y30;
+        this.x31=x31,this.y31=y31;
+        this.x32=x32,this.y32=y32;
+        this.x33=x33,this.y33=y33;
+        this.x34=x34,this.y34=y34;
+        this.x35=x35,this.y35=y35;
+        this.x36=x36,this.y36=y36;
+        this.x37=x37,this.y37=y37;
+        this.x38=x38,this.y38=y38;
+        this.x39=x39,this.y39=y39;
+        this.x40=x40,this.y40=y40;
+        this.update=function(){
+          ctx=gameArea.context;
+          //car 3 going right.
+          //top of the bus.
+          ctx.beginPath();
+          ctx.fillStyle="grey";
+          ctx.strokeStyle="green";
+          ctx.moveTo(this.x1,this.y1);
+          ctx.lineTo(this.x2,this.y2);
+          ctx.lineTo(this.x3,this.y3);
+          ctx.lineTo(this.x4,this.y4);
+          ctx.lineTo(this.x5,this.y5);
+          ctx.moveTo(this.x6,this.y6);
+          ctx.lineTo(this.x7,this.y7);
+          ctx.moveTo(this.x8,this.y8);
+          ctx.lineTo(this.x9,this.y9);
+          ctx.moveTo(this.x10,this.y10);
+          ctx.lineTo(this.x11,this.y11);
+          ctx.moveTo(this.x12,this.y12);
+          ctx.lineTo(this.x13,this.y13);
+          ctx.moveTo(this.x14,this.y14);
+          ctx.lineTo(this.x15,this.y15);
+          ctx.moveTo(this.x16,this.y16);
+          ctx.lineTo(this.x17,this.y17);
+          ctx.moveTo(this.x18,this.y18);
+          ctx.lineTo(this.x19,this.y19);
+          ctx.moveTo(this.x20,this.y20);
+          ctx.lineTo(this.x21,this.y21);
+          ctx.fill();
+          ctx.stroke();
+          //body of the bus.
+          ctx.beginPath();
+          ctx.fillStyle="green";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x22,this.y22);
+          ctx.lineTo(this.x23,this.y23);
+          ctx.lineTo(this.x24,this.y24);
+          ctx.lineTo(this.x25,this.y25);
+          ctx.lineTo(this.x26,this.y26);
+          ctx.fill();
+          ctx.stroke();
+          //left wheel of the bus.
+          ctx.beginPath();
+          ctx.fillStyle="black";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x27,this.y27);
+          ctx.lineTo(this.x28,this.y28);
+          ctx.lineTo(this.x29,this.y29);
+          ctx.lineTo(this.x30,this.y30);
+          ctx.lineTo(this.x31,this.y31);
+          ctx.fill();
+          ctx.stroke();
+          //right wheel of the bus.
+          ctx.beginPath();
+          ctx.fillStyle="black";
+          ctx.strokeStyle="black";
+          ctx.moveTo(this.x34,this.y34);
+          ctx.lineTo(this.x35,this.y35);
+          ctx.lineTo(this.x36,this.y36);
+          ctx.lineTo(this.x37,this.y37);
+          ctx.lineTo(this.x38,this.y38);
+          ctx.fill();
+          ctx.stroke();
+        }
+        this.newPos=function(){
+          this.x1+=this.speedX,this.x2+=this.speedX,this.x3+=this.speedX,this.x4+=this.speedX,this.x5+=this.speedX,this.x6+=this.speedX,this.x7+=this.speedX,this.x8+=this.speedX,this.x9+=this.speedX,this.x10+=this.speedX,this.x11+=this.speedX,this.x12+=this.speedX,this.x13+=this.speedX,this.x14+=this.speedX,this.x15+=this.speedX,this.x16+=this.speedX,this.x17+=this.speedX,this.x18+=this.speedX,this.x19+=this.speedX,this.x20+=this.speedX,this.x21+=this.speedX,this.x22+=this.speedX,this.x23+=this.speedX,this.x24+=this.speedX,this.x25+=this.speedX,this.x26+=this.speedX,this.x27+=this.speedX,this.x28+=this.speedX,this.x29+=this.speedX,this.x30+=this.speedX,this.x31+=this.speedX,this.x34+=this.speedX,this.x35+=this.speedX,this.x36+=this.speedX,this.x37+=this.speedX,this.x38+=this.speedX;
+        }
+        this.resetPos=function(){
+          this.x1=1000,this.x2=900,this.x3=900,this.x4=1000,this.x5=1000,this.x6=920,this.x7=920,this.x8=930,this.x9=930,this.x10=940,this.x11=940,this.x12=950,this.x13=950,this.x14=960,this.x15=960,this.x16=970,this.x17=970,this.x18=980,this.x19=980,this.x20=990,this.x21=990,this.x22=900,this.x23=900,this.x24=1000,this.x25=1000,this.x26=900,this.x27=905,this.x28=905,this.x29=920,this.x30=920,this.x31=905,this.x33=910,this.x34=995,this.x35=995,this.x36=980,this.x37=980,this.x38=995;
+        }
+      }
+
+      function Bullet(x1,y1,x2,y2,x3,y3,x4,y4,x5,y5,x6,y6){
+        this.x1=x1,this.y1=y1;
+        this.x2=x2,this.y2=y2;
+        this.x3=x3,this.y3=y3;
+        this.x4=x4,this.y4=y4;
+        this.x5=x5,this.y5=y5;
+        this.x6=x6,this.y6=y6;
+        this.speedY=0;
+        this.update=function(){
+          if(level===1){
+        ctx=gameArea.context;
+        ctx.beginPath();
+        ctx.strokeStyle="black";
+        ctx.fillStyle="#BF531D";
+        ctx.moveTo(this.x1,this.y1);
+        ctx.lineTo(this.x2,this.y2);
+        ctx.lineTo(this.x3,this.y3);
+        ctx.lineTo(this.x4,this.y4);
+        ctx.lineTo(this.x5,this.y5);
+        ctx.lineTo(this.x6,this.y6);
+        ctx.stroke();
+        ctx.fill();
+        ctx.closePath();
+      }
+      }
+      this.alignWithP1=function(){
+        this.x1=(tank1.x1+30),this.x2=(tank1.x1+40),this.x3=(tank1.x1+50),this.x4=(tank1.x1+50),this.x5=(tank1.x1+30),this.x6=(tank1.x1+30);
+        this.y1=(tank1.y1),this.y2=(tank1.y1-10),this.y3=(tank1.y1),this.y4=(tank1.y1+30),this.y5=(tank1.y1+30),this.y6=(tank1.y1);
+      }
+      this.alignWithP2=function(){
+        this.x1=(tank2.x1+30),this.x2=(tank2.x1+50),this.x3=(tank2.x1+50),this.x4=(tank2.x1+40),this.x5=(tank2.x1+30),this.x6=(tank2.x1+30);
+        this.y1=(tank2.y3),this.y2=(tank2.y3),this.y3=(tank2.y3+30),this.y4=(tank2.y3+40),this.y5=(tank2.y3+30),this.y6=(tank2.y3);
+      }
+        this.newPos=function(){
+          this.y1+=this.speedY;
+          this.y2+=this.speedY;
+          this.y3+=this.speedY;
+          this.y4+=this.speedY;
+          this.y5+=this.speedY;
+          this.y6+=this.speedY;
+        }
+      }
+      function Tank(x1,y1,x2,y2,x3,y3,x4,y4,x5,y5,x6,y6,x7,y7,x8,y8,x9,y9,x10,y10,x11,y11,x12,y12,x13,y13,x14,y14,x15,y15,x16,y16,x17,y17,x18,y18,x19,y19,x20,y20,x21,y21,x22,y22,x23,y23,x24,y24,x25,y25,x26,y26,x27,y27,x28,y28,x29,y29,x30,y30,x31,y31,x32,y32,x33,y33,x34,y34,x35,y35,x36,y36,x37,y37,x38,y38,x39,y39,x40,y40,x41,y41,x42,y42,x43,y43,x44,y44,x45,y45,x46,y46,x47,y47,x48,y48,x49,y49,x50,y50,x51,y51,x52,y52,x53,y53,x54,y54,x55,y55,x56,y56,x57,y57,x58,y58,x59,y59,x60,y60,x61,y61,x62,y62,x63,y63,x64,y64,x65,y65,x66,y66,x67,y67,x68,y68,color){
+				this.x1=x1,this.y1=y1;
+				this.x2=x2,this.y2=y2;
+				this.x3=x3,this.y3=y3;
+				this.x4=x4,this.y4=y4;
+				this.x5=x5,this.y5=y5;
+				this.x6=x6,this.y6=y6;
+				this.x7=x7,this.y7=y7;
+				this.x8=x8,this.y8=y8;
+				this.x9=x9,this.y9=y9;
+				this.x10=x10,this.y10=y10;
+				this.x11=x11,this.y11=y11;
+				this.x12=x12,this.y12=y12;
+				this.x13=x13,this.y13=y13;
+				this.x14=x14,this.y14=y14;
+				this.x15=x15,this.y15=y15;
+				this.x16=x16,this.y16=y16;
+				this.x17=x17,this.y17=y17;
+				this.x18=x18,this.y18=y18;
+				this.x19=x19,this.y19=y19;
+				this.x20=x20,this.y20=y20;
+				this.x21=x21,this.y21=y21;
+				this.x22=x22,this.y22=y22;
+				this.x23=x23,this.y23=y23;
+				this.x24=x24,this.y24=y24;
+				this.x25=x25,this.y25=y25;
+				this.x26=x26,this.y26=y26;
+				this.x27=x27,this.y27=y27;
+				this.x28=x28,this.y28=y28;
+				this.x29=x29,this.y29=y29;
+				this.x30=x30,this.y30=y30;
+				this.x31=x31,this.y31=y31;
+				this.x32=x32,this.y32=y32;
+				this.x33=x33,this.y33=y33;
+				this.x34=x34,this.y34=y34;
+				this.x35=x35,this.y35=y35;
+				this.x36=x36,this.y36=y36;
+				this.x37=x37,this.y37=y37;
+				this.x38=x38,this.y38=y38;
+				this.x39=x39,this.y39=y39;
+				this.x40=x40,this.y40=y40;
+				this.x41=x41,this.y41=y41;
+				this.x42=x42,this.y42=y42;
+				this.x43=x43,this.y43=y43;
+				this.x44=x44,this.y44=y44;
+				this.x45=x45,this.y45=y45;
+				this.x46=x46,this.y46=y46;
+				this.x47=x47,this.y47=y47;
+				this.x48=x48,this.y48=y48;
+				this.x49=x49,this.y49=y49;
+				this.x50=x50,this.y50=y50;
+				this.x51=x51,this.y51=y51;
+				this.x52=x52,this.y52=y52;
+				this.x53=x53,this.y53=y53;
+				this.x54=x54,this.y54=y54;
+				this.x55=x55,this.y55=y55;
+				this.x56=x56,this.y56=y56;
+				this.x57=x57,this.y57=y57;
+				this.x58=x58,this.y58=y58;
+				this.x59=x59,this.y59=y59;
+				this.x60=x60,this.y60=y60;
+				this.x61=x61,this.y61=y61;
+				this.x62=x62,this.y62=y62;
+				this.x63=x63,this.y63=y63;
+				this.x64=x64,this.y64=y64;
+				this.x65=x65,this.y65=y65;
+				this.x66=x66,this.y66=y66;
+				this.x67=x67,this.y67=y67;
+				this.x68=x68,this.y68=y68;
+				this.color=color;
+				this.update=function(){
+        ctx=gameArea.context;
+				ctx.beginPath();
+				ctx.fillStyle="green";
+				ctx.strokeStyle="black";
+				//outer edge of the body
+				ctx.moveTo(this.x1,this.y1);
+				ctx.lineTo(this.x2,this.y2);
+				ctx.lineTo(this.x3,this.y3);
+				ctx.lineTo(this.x4,this.y4);
+				ctx.lineTo(this.x5,this.y5);
+				ctx.fill();
+				ctx.stroke();
+				ctx.closePath();
+				//arm of the tank
+				ctx.beginPath();
+				ctx.fillStyle="black";
+				ctx.strokeStyle=this.color;
+				ctx.moveTo(this.x6,this.y6);
+				ctx.lineTo(this.x7,this.y7);
+				ctx.lineTo(this.x8,this.y8);
+				ctx.lineTo(this.x9,this.y9);
+				ctx.lineTo(this.x10,this.y10);
+				ctx.lineTo(this.x11,this.y11);
+				ctx.lineTo(this.x12,this.y12);
+				ctx.lineTo(this.x13,this.y13);
+				ctx.lineTo(this.x14,this.y14);
+				ctx.lineTo(this.x15,this.y15);
+				ctx.lineTo(this.x16,this.y16);
+				ctx.fill();
+				ctx.stroke();
+				ctx.closePath();
+				//left tracks of the tank
+				ctx.beginPath();
+				ctx.fillStyle="brown";
+				ctx.strokeStyle="black";
+				ctx.moveTo(this.x17,this.y17);
+				ctx.lineTo(this.x18,this.y18);
+				ctx.lineTo(this.x19,this.y19);
+				ctx.lineTo(this.x20,this.y20);
+				ctx.fill();
+				ctx.stroke();
+				ctx.closePath();
+				//left ridges of tracks of the tank
+				ctx.beginPath();
+				ctx.strokeStyle="black";
+				ctx.moveTo(this.x21,this.y21);//rdgL[1]
+				ctx.lineTo(this.x22,this.y22);//rdgL[3]
+				ctx.lineTo(this.x23,this.y23);//rdgL[5]
+				ctx.moveTo(this.x24,this.y24);//rdgL[7]
+				ctx.lineTo(this.x25,this.y25);//rdgL[9]
+				ctx.lineTo(this.x26,this.y26);//rdgL[11]
+				ctx.moveTo(this.x27,this.y27);//rdgL[13]
+				ctx.lineTo(this.x28,this.y28);//rdgL[15]
+				ctx.lineTo(this.x29,this.y29);//rdgL[17]
+				ctx.moveTo(this.x30,this.y30);//rdgL[19]
+				ctx.lineTo(this.x31,this.y31);//rdgL[21]
+				ctx.lineTo(this.x32,this.y32);//rdgL[23]
+				ctx.moveTo(this.x33,this.y33);//rdgL[25]
+				ctx.lineTo(this.x34,this.y34);//rdgL[27]
+				ctx.lineTo(this.x35,this.y35);//rdgL[29]
+				ctx.stroke();
+				ctx.closePath();
+				//right tracks of the tank
+				ctx.beginPath();
+				ctx.fillStyle="brown";
+				ctx.strokeStyle="black";
+				ctx.moveTo(this.x36,this.y36);
+				ctx.lineTo(this.x37,this.y37);
+				ctx.lineTo(this.x38,this.y38);
+				ctx.lineTo(this.x39,this.y39);
+				ctx.fill();
+				ctx.stroke();
+				ctx.closePath();
+				//right ridges of tracks of the tank
+				ctx.beginPath();
+				ctx.strokeStyle="black";
+				ctx.moveTo(this.x40,this.y40);//rdgR[0]
+				ctx.lineTo(this.x41,this.y41);//rdgR[1]
+				ctx.lineTo(this.x42,this.y42);//rdgR[2]
+				ctx.moveTo(this.x43,this.y43);//rdgR[3]
+				ctx.lineTo(this.x44,this.y44);//rdgR[4]
+				ctx.lineTo(this.x45,this.y45);//rdgR[5]
+				ctx.moveTo(this.x46,this.y46);//rdgR[6]
+				ctx.lineTo(this.x47,this.y47);//rdgR[7]
+				ctx.lineTo(this.x48,this.y48);//rdgR[8]
+				ctx.moveTo(this.x49,this.y49);//rdgR[9]
+				ctx.lineTo(this.x50,this.y50);//rdgR[10]
+				ctx.lineTo(this.x51,this.y51);//rdgR[11]
+				ctx.moveTo(this.x52,this.y52);//rdgR[12]
+				ctx.lineTo(this.x53,this.y53);//rdgR[13]
+				ctx.lineTo(this.x54,this.y54);//rdgR[14]
+				ctx.stroke();
+				ctx.closePath();
+				//inner lines of the tank, top left
+				ctx.beginPath();
+				ctx.strokeStyle="black";
+				ctx.moveTo(this.x55,this.y55);
+				ctx.lineTo(this.x56,this.y56);
+				ctx.lineTo(this.x57,this.y57);
+				ctx.stroke();
+				ctx.closePath();
+				//inner lines of the tank, top right
+				ctx.beginPath();
+				ctx.strokeStyle="black";
+				ctx.moveTo(this.x58,this.y58);
+				ctx.lineTo(this.x59,this.y59);
+				ctx.lineTo(this.x60,this.y60);
+				ctx.stroke();
+				ctx.closePath();
+				//inner lines of the tank, left, bottom, and right
+				ctx.beginPath();
+				ctx.strokeStyle="black";
+				ctx.moveTo(this.x61,this.y61);
+				ctx.lineTo(this.x62,this.y62);
+				ctx.lineTo(this.x63,this.y63);
+				ctx.lineTo(this.x64,this.y64);
+				ctx.moveTo(this.x65,this.y65);
+				ctx.lineTo(this.x66,this.y66);
+				ctx.moveTo(this.x67,this.y67);
+				ctx.lineTo(this.x68,this.y68);
+				ctx.stroke();
+				ctx.closePath();
+			}
+			this.newPos=function(){
+        //below is the movement of the tank.
+				this.x1+=this.speedX,this.x2+=this.speedX,this.x3+=this.speedX,this.x4+=this.speedX,this.x5+=this.speedX,this.x6+=this.speedX,this.x7+=this.speedX,this.x8+=this.speedX,this.x9+=this.speedX,this.x10+=this.speedX,this.x11+=this.speedX,this.x12+=this.speedX,this.x13+=this.speedX,this.x14+=this.speedX,this.x15+=this.speedX,this.x16+=this.speedX,this.x17+=this.speedX,this.x18+=this.speedX,this.x19+=this.speedX,this.x20+=this.speedX,this.x21+=this.speedX,this.x22+=this.speedX,this.x23+=this.speedX,this.x24+=this.speedX,this.x25+=this.speedX,this.x26+=this.speedX,this.x27+=this.speedX,this.x28+=this.speedX,this.x29+=this.speedX,this.x30+=this.speedX,this.x31+=this.speedX,this.x32+=this.speedX,this.x33+=this.speedX,this.x34+=this.speedX,this.x35+=this.speedX,this.x36+=this.speedX,this.x37+=this.speedX,this.x38+=this.speedX,this.x39+=this.speedX,this.x40+=this.speedX,this.x41+=this.speedX,this.x42+=this.speedX,this.x43+=this.speedX,this.x44+=this.speedX,this.x45+=this.speedX,this.x46+=this.speedX,this.x47+=this.speedX,this.x48+=this.speedX,this.x49+=this.speedX,this.x50+=this.speedX,this.x51+=this.speedX,this.x52+=this.speedX,this.x53+=this.speedX,this.x54+=this.speedX,this.x55+=this.speedX,this.x56+=this.speedX,this.x57+=this.speedX,this.x58+=this.speedX,this.x59+=this.speedX,this.x60+=this.speedX,this.x61+=this.speedX,this.x62+=this.speedX,this.x63+=this.speedX,this.x64+=this.speedX,this.x65+=this.speedX,this.x66+=this.speedX,this.x67+=this.speedX,this.x68+=this.speedX;
+			}
+			}
+      function explode(bulletX,bulletY){
+          expGrd=ctx.createRadialGradient(bulletX,bulletY,30,bulletX,bulletY,15);
+          expGrd.addColorStop(0,"red");
+          expGrd.addColorStop(1,"yellow");
+          ctx.beginPath();
+          ctx.fillStyle=expGrd;
+          ctx.arc(bulletX,bulletY,30,0,Math.PI*2);
+          ctx.fill();
+      }
+      function everyInterval(n,a){
+        if((a / n) % 1==0){return true;}
+        return false;
+      }
+      function updateGameArea(){
+        gameArea.clear();
+        if(level===0 && p1Ready && p2Ready){
+          gameArea.frameNoStart+=1;
+        }
+        else{
+          gameArea.frameNoStart=2;
+          gameArea.frameNoStart+=0;
+        }
+        if (level===1){
+        gameArea.frameNoCL1+=1;
+        gameArea.frameNoCL2+=1;
+        gameArea.frameNoCL3+=1;
+        gameArea.frameNoCR1+=1;
+        gameArea.frameNoCR2+=1;
+        gameArea.frameNoCR3+=1;
+      }
+        tank1.speedX=0;
+        tank2.speedX=0;
+        gameArea.background();
+        gameArea.road();
+        if(everyInterval(300,gameArea.frameNoCL1) && level===1){
+          car1L.resetPos();
+          car1L.speedX= -5;
+        }
+        if(everyInterval(600,gameArea.frameNoCL2) && level===1){
+          car2L.resetPos();
+          car2L.speedX= -5;
+        }
+        if(everyInterval(250,gameArea.frameNoCL3) && level===1){
+          car3L.resetPos();
+          car3L.speedX= -5;
+        }
+        if(everyInterval(200,gameArea.frameNoCR1) && level===1){
+          car1R.resetPos();
+          car1R.speedX= 4;
+        }
+        if(everyInterval(350,gameArea.frameNoCR2) && level===1){
+          car2R.resetPos();
+          car2R.speedX= 7;
+        }
+        if(everyInterval(450,gameArea.frameNoCR3) && level===1){
+          car3R.resetPos();
+          car3R.speedX= 3;
+        }
+        if(level===1){
+        car1L.newPos();
+        car1L.update();
+        car2L.newPos();
+        car2L.update();
+        car3L.newPos();
+        car3L.update();
+        car1R.newPos();
+        car1R.update();
+        car2R.newPos();
+        car2R.update();
+        car3R.newPos();
+        car3R.update();
+      }
+        if(gameArea.tankKeys1 && gameArea.tankKeys1[37] && (tank1.x1-10)>0 && level===1){tank1.speedX= -3;moveTracks1();trackSnd1.play();}else{trackSnd1.currentTime(0);trackSnd1.stop();}
+        if(gameArea.tankKeys1 && gameArea.tankKeys1[39] && (tank1.x2+10)<800 && level===1){tank1.speedX= 3;moveTracks1();trackSnd2.play();}else{trackSnd2.currentTime(0);trackSnd2.stop();}
+        if(gameArea.tankKeys2 && gameArea.tankKeys2[65] && (tank2.x1-10)>0 && level===1){tank2.speedX= -3;moveTracks2();trackSnd3.play();}else{trackSnd3.currentTime(0);trackSnd3.stop();}
+        if(gameArea.tankKeys2 && gameArea.tankKeys2[68] && (tank2.x2+10)<800 && level===1){tank2.speedX= 3;moveTracks2();trackSnd4.play();}else{trackSnd4.currentTime(0);trackSnd4.stop();}
+        if(gameArea.bulletP1 && gameArea.bulletP1[38] && level===1){
+          if(isShootP1True1()){
+          bullets1[0].alignWithP1();bullets1[0].speedY= -7;
+          shootSound1.play();
+        }
+          if(isShootP1True2()){
+            bullets1[1].alignWithP1();bullets1[1].speedY= -7;
+            shootSound2.play();
+          }
+          if(isShootP1True3()){
+            bullets1[2].alignWithP1();bullets1[2].speedY= -7;
+            shootSound3.play();
+          }
+        }
+
+        if(bullets1[0].y1<0 || gameArea.crashWithP2(bullets1[0],tank2.x1,tank2.x2,tank2.y1,tank2.y3)){
+          shootSound1.currentTime(0);
+          shootSound1.stop();
+          bullets1[0].speedY=0;
+          bullets1[0].x1=700,bullets1[0].x2=710,bullets1[0].x3=720,bullets1[0].x4=720,bullets1[0].x5=700,bullets1[0].x6=700,bullets1[0].y1=550,bullets1[0].y2=540,bullets1[0].y3=550,bullets1[0].y4=580,bullets1[0].y5=580,bullets1[0].y6=550;
+        }
+        if(bullets1[1].y1<0 || gameArea.crashWithP2(bullets1[1],tank2.x1,tank2.x2,tank2.y1,tank2.y3)){
+          shootSound2.currentTime(0);
+          shootSound2.stop();
+          bullets1[1].speedY=0;
+          bullets1[1].x1=725,bullets1[1].x2=735,bullets1[1].x3=745,bullets1[1].x4=745,bullets1[1].x5=725,bullets1[1].x6=725,bullets1[1].y1=550,bullets1[1].y2=540,bullets1[1].y3=550,bullets1[1].y4=580,bullets1[1].y5=580,bullets1[1].y6=550;
+        }
+        if(bullets1[2].y1<0 || gameArea.crashWithP2(bullets1[2],tank2.x1,tank2.x2,tank2.y1,tank2.y3)){
+          shootSound3.currentTime(0);
+          shootSound3.stop();
+          bullets1[2].speedY=0;
+          bullets1[2].x1=750,bullets1[2].x2=760,bullets1[2].x3=770,bullets1[2].x4=770,bullets1[2].x5=750,bullets1[2].x6=750,bullets1[2].y1=550,bullets1[2].y2=540,bullets1[2].y3=550,bullets1[2].y4=580,bullets1[2].y5=580,bullets1[2].y6=550;
+        }
+        if(gameArea.bulletP2 && gameArea.bulletP2[87] && level===1){
+          if(isShootP2True1()){
+            shootSound4.play();
+            bullets2[0].alignWithP2();bullets2[0].speedY= 7;
+          }
+          if(isShootP2True2()){
+            shootSound5.play();
+            bullets2[1].alignWithP2();bullets2[1].speedY= 7;
+          }
+          if(isShootP2True3()){
+            shootSound6.play();
+            bullets2[2].alignWithP2();bullets2[2].speedY= 7;
+          }
+        }
+        if(bullets2[0].y1>600 || gameArea.crashWithP1(bullets2[0],tank1.x1,tank1.x2,tank1.y3,tank1.y1)){
+          shootSound4.currentTime(0);
+          shootSound4.stop();
+          bullets2[0].speedY=0;
+          bullets2[0].x1=80,bullets2[0].x2=100,bullets2[0].x3=100,bullets2[0].x4=90,bullets2[0].x5=80,bullets2[0].x6=80,bullets2[0].y1=20,bullets2[0].y2=20,bullets2[0].y3=50,bullets2[0].y4=60,bullets2[0].y5=50,bullets2[0].y6=20;
+        }
+        if(bullets2[1].y1>600 || gameArea.crashWithP1(bullets2[1],tank1.x1,tank1.x2,tank1.y3,tank1.y1)){
+          shootSound5.currentTime(0);
+          shootSound5.stop();
+          bullets2[1].speedY=0;
+          bullets2[1].x1=55,bullets2[1].x2=75,bullets2[1].x3=75,bullets2[1].x4=65,bullets2[1].x5=55,bullets2[1].x6=55,bullets2[1].y1=20,bullets2[1].y2=20,bullets2[1].y3=50,bullets2[1].y4=60,bullets2[1].y5=50,bullets2[1].y6=20;
+        }
+        if(bullets2[2].y1>600 || gameArea.crashWithP1(bullets2[2],tank1.x1,tank1.x2,tank1.y3,tank1.y1)){
+          shootSound6.currentTime(0);
+          shootSound6.stop();
+          bullets2[2].speedY=0;
+          bullets2[2].x1=30,bullets2[2].x2=50,bullets2[2].x3=50,bullets2[2].x4=40,bullets2[2].x5=30,bullets2[2].x6=30,bullets2[2].y1=20,bullets2[2].y2=20,bullets2[2].y3=50,bullets2[2].y4=60,bullets2[2].y5=50,bullets2[2].y6=20;
+        }
+
+        if(level===1){
+        bullets1[0].newPos();
+        bullets1[0].update();
+        bullets1[1].newPos();
+        bullets1[1].update();
+        bullets1[2].newPos();
+        bullets1[2].update();
+        bullets2[0].newPos();
+        bullets2[0].update();
+        bullets2[1].newPos();
+        bullets2[1].update();
+        bullets2[2].newPos();
+        bullets2[2].update();
+      }
+
+        if(level===0 || level===1){
+        tank1.newPos();
+        tank1.update();
+        tank2.newPos();
+        tank2.update();
+      }
+        //below explodes and resets if car1Left is hit.
+        //bullet 1, from player 1.
+        if(gameArea.crashWithCar(bullets1[0],car1L.x9,car1L.x11,car1L.y1,car1L.y10)){
+          explode(bullets1[0].x2,bullets1[0].y2);
+          car1L.resetPos();
+          gameArea.frameNoCL1=0;
+          bullets1[0].speedY=0;
+          bullets1[0].x1=700,bullets1[0].x2=710,bullets1[0].x3=720,bullets1[0].x4=720,bullets1[0].x5=700,bullets1[0].x6=700,bullets1[0].y1=550,bullets1[0].y2=540,bullets1[0].y3=550,bullets1[0].y4=580,bullets1[0].y5=580,bullets1[0].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //below explodes and resets if car1Left is hit.
+        //bullet 2, from player 1.
+        if(gameArea.crashWithCar(bullets1[1],car1L.x9,car1L.x11,car1L.y1,car1L.y10)){
+          explode(bullets1[1].x2,bullets1[1].y2);
+          car1L.resetPos();
+          gameArea.frameNoCL1=0;
+          bullets1[1].speedY=0;
+          bullets1[1].x1=725,bullets1[1].x2=735,bullets1[1].x3=745,bullets1[1].x4=745,bullets1[1].x5=725,bullets1[1].x6=725,bullets1[1].y1=550,bullets1[1].y2=540,bullets1[1].y3=550,bullets1[1].y4=580,bullets1[1].y5=580,bullets1[1].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //below explodes and resets if car1Left is hit.
+        //bullet 3, from player 1.
+        if(gameArea.crashWithCar(bullets1[2],car1L.x9,car1L.x11,car1L.y1,car1L.y10)){
+          explode(bullets1[2].x2,bullets1[2].y2);
+          car1L.resetPos();
+          gameArea.frameNoCL1=0;
+          bullets1[2].speedY=0;
+          bullets1[2].x1=750,bullets1[2].x2=760,bullets1[2].x3=770,bullets1[2].x4=770,bullets1[2].x5=750,bullets1[2].x6=750,bullets1[2].y1=550,bullets1[2].y2=540,bullets1[2].y3=550,bullets1[2].y4=580,bullets1[2].y5=580,bullets1[2].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //below explodes and resets if car1Left is hit.
+        //bullet 1, from player 2.
+        if(gameArea.crashWithCar(bullets2[0],car1L.x9,car1L.x11,car1L.y1,car1L.y10)){
+          explode(bullets2[0].x2,bullets2[0].y2);
+          car1L.resetPos();
+          gameArea.frameNoCL1=0;
+          bullets2[0].speedY=0;
+          bullets2[0].x1=80,bullets2[0].x2=100,bullets2[0].x3=100,bullets2[0].x4=90,bullets2[0].x5=80,bullets2[0].x6=80,bullets2[0].y1=20,bullets2[0].y2=20,bullets2[0].y3=50,bullets2[0].y4=60,bullets2[0].y5=50,bullets2[0].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 2, from player 2.
+        if(gameArea.crashWithCar(bullets2[1],car1L.x9,car1L.x11,car1L.y1,car1L.y10)){
+          explode(bullets2[1].x2,bullets2[1].y2);
+          car1L.resetPos();
+          gameArea.frameNoCL1=0;
+          bullets2[1].speedY=0;
+          bullets2[1].x1=55,bullets2[1].x2=75,bullets2[1].x3=75,bullets2[1].x4=65,bullets2[1].x5=55,bullets2[1].x6=55,bullets2[1].y1=20,bullets2[1].y2=20,bullets2[1].y3=50,bullets2[1].y4=60,bullets2[1].y5=50,bullets2[1].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 3, from player 2.
+        if(gameArea.crashWithCar(bullets2[2],car1L.x9,car1L.x11,car1L.y1,car1L.y10)){
+          explode(bullets2[2].x2,bullets2[2].y2);
+          car1L.resetPos();
+          gameArea.frameNoCL1=0;
+          bullets2[2].speedY=0;
+          bullets2[2].x1=30,bullets2[2].x2=50,bullets2[2].x3=50,bullets2[2].x4=40,bullets2[2].x5=30,bullets2[2].x6=30,bullets2[2].y1=20,bullets2[2].y2=20,bullets2[2].y3=50,bullets2[2].y4=60,bullets2[2].y5=50,bullets2[2].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //below explodes and resets if car2Left is hit.
+        //bullet 1, from player 1.
+        if(gameArea.crashWithCar(bullets1[0],car2L.x9,car2L.x11,car2L.y1,car2L.y10)){
+          explode(bullets1[0].x2,bullets1[0].y2);
+          car2L.resetPos();
+          gameArea.frameNoCL2=0;
+          bullets1[0].speedY=0;
+          bullets1[0].x1=700,bullets1[0].x2=710,bullets1[0].x3=720,bullets1[0].x4=720,bullets1[0].x5=700,bullets1[0].x6=700,bullets1[0].y1=550,bullets1[0].y2=540,bullets1[0].y3=550,bullets1[0].y4=580,bullets1[0].y5=580,bullets1[0].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 2, from player 1.
+        if(gameArea.crashWithCar(bullets1[1],car2L.x9,car2L.x11,car2L.y1,car2L.y10)){
+          explode(bullets1[1].x2,bullets1[1].y2);
+          car2L.resetPos();
+          gameArea.frameNoCL2=0;
+          bullets1[1].speedY=0;
+          bullets1[1].x1=700,bullets1[1].x2=710,bullets1[1].x3=720,bullets1[1].x4=720,bullets1[1].x5=700,bullets1[1].x6=700,bullets1[1].y1=550,bullets1[1].y2=540,bullets1[1].y3=550,bullets1[1].y4=580,bullets1[1].y5=580,bullets1[1].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 3, from player 1.
+        if(gameArea.crashWithCar(bullets1[2],car2L.x9,car2L.x11,car2L.y1,car2L.y10)){
+          explode(bullets1[2].x2,bullets1[2].y2);
+          car2L.resetPos();
+          gameArea.frameNoCL2=0;
+          bullets1[2].speedY=0;
+          bullets1[2].x1=700,bullets1[2].x2=710,bullets1[2].x3=720,bullets1[2].x4=720,bullets1[2].x5=700,bullets1[2].x6=700,bullets1[2].y1=550,bullets1[2].y2=540,bullets1[2].y3=550,bullets1[2].y4=580,bullets1[2].y5=580,bullets1[2].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 1, from player 2.
+        if(gameArea.crashWithCar(bullets2[0],car2L.x9,car2L.x11,car2L.y1,car2L.y10)){
+          explode(bullets2[0].x2,bullets2[0].y2);
+          car2L.resetPos();
+          gameArea.frameNoCL2=0;
+          bullets2[0].speedY=0;
+          bullets2[0].x1=80,bullets2[0].x2=100,bullets2[0].x3=100,bullets2[0].x4=90,bullets2[0].x5=80,bullets2[0].x6=80,bullets2[0].y1=20,bullets2[0].y2=20,bullets2[0].y3=50,bullets2[0].y4=60,bullets2[0].y5=50,bullets2[0].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 2, from player 2.
+        if(gameArea.crashWithCar(bullets2[1],car2L.x9,car2L.x11,car2L.y1,car2L.y10)){
+          explode(bullets2[1].x2,bullets2[1].y2);
+          car2L.resetPos();
+          gameArea.frameNoCL2=0;
+          bullets2[1].speedY=0;
+          bullets2[1].x1=55,bullets2[1].x2=75,bullets2[1].x3=75,bullets2[1].x4=65,bullets2[1].x5=55,bullets2[1].x6=55,bullets2[1].y1=20,bullets2[1].y2=20,bullets2[1].y3=50,bullets2[1].y4=60,bullets2[1].y5=50,bullets2[1].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 3, from player 2.
+        if(gameArea.crashWithCar(bullets2[2],car2L.x9,car2L.x11,car2L.y1,car2L.y10)){
+          explode(bullets2[2].x2,bullets2[2].y2);
+          car2L.resetPos();
+          gameArea.frameNoCL2=0;
+          bullets2[2].speedY=0;
+          bullets2[2].x1=30,bullets2[2].x2=50,bullets2[2].x3=50,bullets2[2].x4=40,bullets2[2].x5=30,bullets2[2].x6=30,bullets2[2].y1=20,bullets2[2].y2=20,bullets2[2].y3=50,bullets2[2].y4=60,bullets2[2].y5=50,bullets2[2].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //below explodes and resets if car3Left is hit.
+        //bullet 1, from player 1.
+        if(gameArea.crashWithCar(bullets1[0],car3L.x26,car3L.x1,car3L.y1,car3L.y23)){
+          explode(bullets1[0].x2,bullets1[0].y2);
+          car3L.resetPos();
+          gameArea.frameNoCL3=0;
+          bullets1[0].speedY=0;
+          bullets1[0].x1=700,bullets1[0].x2=710,bullets1[0].x3=720,bullets1[0].x4=720,bullets1[0].x5=700,bullets1[0].x6=700,bullets1[0].y1=550,bullets1[0].y2=540,bullets1[0].y3=550,bullets1[0].y4=580,bullets1[0].y5=580,bullets1[0].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 2, from player 1.
+        if(gameArea.crashWithCar(bullets1[1],car3L.x26,car3L.x1,car3L.y1,car3L.y23)){
+          explode(bullets1[1].x2,bullets1[1].y2);
+          car3L.resetPos();
+          gameArea.frameNoCL3=0;
+          bullets1[1].speedY=0;
+          bullets1[1].x1=725,bullets1[1].x2=735,bullets1[1].x3=745,bullets1[1].x4=745,bullets1[1].x5=725,bullets1[1].x6=725,bullets1[1].y1=550,bullets1[1].y2=540,bullets1[1].y3=550,bullets1[1].y4=580,bullets1[1].y5=580,bullets1[1].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 3, from player 1.
+        if(gameArea.crashWithCar(bullets1[2],car3L.x26,car3L.x1,car3L.y1,car3L.y23)){
+          explode(bullets1[2].x2,bullets1[2].y2);
+          car3L.resetPos();
+          gameArea.frameNoCL3=0;
+          bullets1[2].speedY=0;
+          bullets1[2].x1=750,bullets1[2].x2=760,bullets1[2].x3=770,bullets1[2].x4=770,bullets1[2].x5=750,bullets1[2].x6=750,bullets1[2].y1=550,bullets1[2].y2=540,bullets1[2].y3=550,bullets1[2].y4=580,bullets1[2].y5=580,bullets1[2].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //below explodes and resets if car3Left is hit.
+        //bullet 1, from player 2.
+        if(gameArea.crashWithCar(bullets2[0],car3L.x26,car3L.x1,car3L.y1,car3L.y23)){
+          explode(bullets2[0].x2,bullets2[0].y2);
+          car3L.resetPos();
+          gameArea.frameNoCL3=0;
+          bullets2[0].speedY=0;
+          bullets2[0].x1=80,bullets2[0].x2=100,bullets2[0].x3=100,bullets2[0].x4=90,bullets2[0].x5=80,bullets2[0].x6=80,bullets2[0].y1=20,bullets2[0].y2=20,bullets2[0].y3=50,bullets2[0].y4=60,bullets2[0].y5=50,bullets2[0].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+
+        }
+        //bullet 2, from player 2.
+        if(gameArea.crashWithCar(bullets2[1],car3L.x26,car3L.x1,car3L.y1,car3L.y23)){
+          explode(bullets2[1].x2,bullets2[1].y2);
+          car3L.resetPos();
+          gameArea.frameNoCL3=0;
+          bullets2[1].speedY=0;
+          bullets2[1].x1=55,bullets2[1].x2=75,bullets2[1].x3=75,bullets2[1].x4=65,bullets2[1].x5=55,bullets2[1].x6=55,bullets2[1].y1=20,bullets2[1].y2=20,bullets2[1].y3=50,bullets2[1].y4=60,bullets2[1].y5=50,bullets2[1].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+
+        }
+        //bullet 3, from player 2.
+        if(gameArea.crashWithCar(bullets2[2],car3L.x26,car3L.x1,car3L.y1,car3L.y23)){
+          explode(bullets2[2].x2,bullets2[2].y2);
+          car3L.resetPos();
+          gameArea.frameNoCL3=0;
+          bullets2[2].speedY=0;
+          bullets2[2].x1=30,bullets2[2].x2=50,bullets2[2].x3=50,bullets2[2].x4=40,bullets2[2].x5=30,bullets2[2].x6=30,bullets2[2].y1=20,bullets2[2].y2=20,bullets2[2].y3=50,bullets2[2].y4=60,bullets2[2].y5=50,bullets2[2].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //below explodes and resets if car1Right is hit.
+        //bullet 1, from player 1.
+        if(gameArea.crashWithCar(bullets1[0],car1R.x9,car1R.x11,car1R.y1,car1R.y10)){
+          explode(bullets1[0].x2,bullets1[0].y2);
+          car1R.resetPos();
+          gameArea.frameNoCR1=0;
+          bullets1[0].speedY=0;
+          bullets1[0].x1=700,bullets1[0].x2=710,bullets1[0].x3=720,bullets1[0].x4=720,bullets1[0].x5=700,bullets1[0].x6=700,bullets1[0].y1=550,bullets1[0].y2=540,bullets1[0].y3=550,bullets1[0].y4=580,bullets1[0].y5=580,bullets1[0].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 2, from player 1.
+        if(gameArea.crashWithCar(bullets1[1],car1R.x9,car1R.x11,car1R.y1,car1R.y10)){
+          explode(bullets1[1].x2,bullets1[1].y2);
+          car1R.resetPos();
+          gameArea.frameNoCR1=0;
+          bullets1[1].speedY=0;
+          bullets1[1].x1=725,bullets1[1].x2=735,bullets1[1].x3=745,bullets1[1].x4=745,bullets1[1].x5=725,bullets1[1].x6=725,bullets1[1].y1=550,bullets1[1].y2=540,bullets1[1].y3=550,bullets1[1].y4=580,bullets1[1].y5=580,bullets1[1].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 3, from player 1.
+        if(gameArea.crashWithCar(bullets1[2],car1R.x9,car1R.x11,car1R.y1,car1R.y10)){
+          explode(bullets1[2].x2,bullets1[2].y2);
+          car1R.resetPos();
+          gameArea.frameNoCR1=0;
+          bullets1[2].speedY=0;
+          bullets1[2].x1=750,bullets1[2].x2=760,bullets1[2].x3=770,bullets1[2].x4=770,bullets1[2].x5=750,bullets1[2].x6=750,bullets1[2].y1=550,bullets1[2].y2=540,bullets1[2].y3=550,bullets1[2].y4=580,bullets1[2].y5=580,bullets1[2].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //below explodes and resets if car1Right is hit.
+        //bullet 1, from player 2.
+        if(gameArea.crashWithCar(bullets2[0],car1R.x9,car1R.x11,car1R.y1,car1R.y10)){
+          explode(bullets2[0].x2,bullets2[0].y2);
+          car1R.resetPos();
+          gameArea.frameNoCR1=0;
+          bullets2[0].speedY=0;
+          bullets2[0].x1=80,bullets2[0].x2=100,bullets2[0].x3=100,bullets2[0].x4=90,bullets2[0].x5=80,bullets2[0].x6=80,bullets2[0].y1=20,bullets2[0].y2=20,bullets2[0].y3=50,bullets2[0].y4=60,bullets2[0].y5=50,bullets2[0].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 2, from player 2.
+        if(gameArea.crashWithCar(bullets2[1],car1R.x9,car1R.x11,car1R.y1,car1R.y10)){
+          explode(bullets2[1].x2,bullets2[1].y2);
+          car1R.resetPos();
+          gameArea.frameNoCR1=0;
+          bullets2[1].speedY=0;
+          bullets2[1].x1=55,bullets2[1].x2=75,bullets2[1].x3=75,bullets2[1].x4=65,bullets2[1].x5=55,bullets2[1].x6=55,bullets2[1].y1=20,bullets2[1].y2=20,bullets2[1].y3=50,bullets2[1].y4=60,bullets2[1].y5=50,bullets2[1].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 3, from player 2.
+        if(gameArea.crashWithCar(bullets2[2],car1R.x9,car1R.x11,car1R.y1,car1R.y10)){
+          explode(bullets2[2].x2,bullets2[2].y2);
+          car1R.resetPos();
+          gameArea.frameNoCR1=0;
+          bullets2[2].speedY=0;
+          bullets2[2].x1=30,bullets2[2].x2=50,bullets2[2].x3=50,bullets2[2].x4=40,bullets2[2].x5=30,bullets2[2].x6=30,bullets2[2].y1=20,bullets2[2].y2=20,bullets2[2].y3=50,bullets2[2].y4=60,bullets2[2].y5=50,bullets2[2].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //below does damage if P1 bullets hit tank2.
+        if(gameArea.crashWithP2(bullets1[0],tank2.x1,tank2.x2,tank2.y1,tank2.y3)){
+          explode(bullets1[0].x2,bullets1[0].y2);
+          gameArea.didDamageT2();
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //below explodes and resets if car2Right is hit.
+        //bullet 1, from player 1.
+        if(gameArea.crashWithCar(bullets1[0],car2R.x9,car2R.x11,car2R.y1,car2R.y10)){
+          explode(bullets1[0].x2,bullets1[0].y2);
+          car2R.resetPos();
+          gameArea.frameNoCR2=0;
+          bullets1[0].speedY=0;
+          bullets1[0].x1=700,bullets1[0].x2=710,bullets1[0].x3=720,bullets1[0].x4=720,bullets1[0].x5=700,bullets1[0].x6=700,bullets1[0].y1=550,bullets1[0].y2=540,bullets1[0].y3=550,bullets1[0].y4=580,bullets1[0].y5=580,bullets1[0].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 2, from player 1.
+        if(gameArea.crashWithCar(bullets1[1],car2R.x9,car2R.x11,car2R.y1,car2R.y10)){
+          explode(bullets1[1].x2,bullets1[1].y2);
+          car2R.resetPos();
+          gameArea.frameNoCR2=0;
+          bullets1[1].speedY=0;
+          bullets1[1].x1=725,bullets1[1].x2=735,bullets1[1].x3=745,bullets1[1].x4=745,bullets1[1].x5=725,bullets1[1].x6=725,bullets1[1].y1=550,bullets1[1].y2=540,bullets1[1].y3=550,bullets1[1].y4=580,bullets1[1].y5=580,bullets1[1].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 3, from player 1.
+        if(gameArea.crashWithCar(bullets1[2],car2R.x9,car2R.x11,car2R.y1,car2R.y10)){
+          explode(bullets1[2].x2,bullets1[2].y2);
+          car2R.resetPos();
+          gameArea.frameNoCR2=0;
+          bullets1[2].speedY=0;
+          bullets1[2].x1=750,bullets1[2].x2=760,bullets1[2].x3=770,bullets1[2].x4=770,bullets1[2].x5=750,bullets1[2].x6=750,bullets1[2].y1=550,bullets1[2].y2=540,bullets1[2].y3=550,bullets1[2].y4=580,bullets1[2].y5=580,bullets1[2].y6=550;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 1, from player 2.
+        if(gameArea.crashWithCar(bullets2[0],car2R.x9,car2R.x11,car2R.y1,car2R.y10)){
+          explode(bullets2[0].x2,bullets2[0].y2);
+          car2R.resetPos();
+          gameArea.frameNoCR2=0;
+          bullets2[0].speedY=0;
+          bullets2[0].x1=80,bullets2[0].x2=100,bullets2[0].x3=100,bullets2[0].x4=90,bullets2[0].x5=80,bullets2[0].x6=80,bullets2[0].y1=20,bullets2[0].y2=20,bullets2[0].y3=50,bullets2[0].y4=60,bullets2[0].y5=50,bullets2[0].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 2, from player 2.
+        if(gameArea.crashWithCar(bullets2[1],car2R.x9,car2R.x11,car2R.y1,car2R.y10)){
+          explode(bullets2[1].x2,bullets2[1].y2);
+          car2R.resetPos();
+          gameArea.frameNoCR2=0;
+          bullets2[1].speedY=0;
+          bullets2[1].x1=55,bullets2[1].x2=75,bullets2[1].x3=75,bullets2[1].x4=65,bullets2[1].x5=55,bullets2[1].x6=55,bullets2[1].y1=20,bullets2[1].y2=20,bullets2[1].y3=50,bullets2[1].y4=60,bullets2[1].y5=50,bullets2[1].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        //bullet 3, from player 2.
+        if(gameArea.crashWithCar(bullets2[2],car2R.x9,car2R.x11,car2R.y1,car2R.y10)){
+          explode(bullets2[2].x2,bullets2[2].y2);
+          car2R.resetPos();
+          gameArea.frameNoCR2=0;
+          bullets2[2].speedY=0;
+          bullets2[2].x1=30,bullets2[2].x2=50,bullets2[2].x3=50,bullets2[2].x4=40,bullets2[2].x5=30,bullets2[2].x6=30,bullets2[2].y1=20,bullets2[2].y2=20,bullets2[2].y3=50,bullets2[2].y4=60,bullets2[2].y5=50,bullets2[2].y6=20;
+          expl1.play();
+          expl1.currentTime(0);
+        }
+        if(gameArea.crashWithP2(bullets1[1],tank2.x1,tank2.x2,tank2.y1,tank2.y3)){
+          explode(bullets1[1].x2,bullets1[1].y2);
+          gameArea.didDamageT2();
+          expl2.play();
+          expl2.currentTime(0);
+        }
+        if(gameArea.crashWithP2(bullets1[2],tank2.x1,tank2.x2,tank2.y1,tank2.y3)){
+          explode(bullets1[2].x2,bullets1[2].y2);
+          gameArea.didDamageT2();
+          expl3.play();
+          expl3.currentTime(0);
+        }
+        //below does damage if P2 bullets hit tank1.
+        if(gameArea.crashWithP1(bullets2[0],tank1.x1,tank1.x2,tank1.y3,tank1.y1)){
+          explode(bullets2[0].x2,bullets2[0].y5);
+          gameArea.didDamageT1();
+          expl4.play();
+          expl4.currentTime(0);
+        }
+        if(gameArea.crashWithP1(bullets2[1],tank1.x1,tank1.x2,tank1.y3,tank1.y1)){
+          explode(bullets2[1].x2,bullets2[1].y5);
+          gameArea.didDamageT1();
+          expl5.play();
+          expl5.currentTime(0);
+        }
+        if(gameArea.crashWithP1(bullets2[2],tank1.x1,tank1.x2,tank1.y3,tank1.y1)){
+          explode(bullets2[2].x2,bullets2[2].y5);
+          gameArea.didDamageT1();
+          expl6.play();
+          expl6.currentTime(0);
+        }
+        function isShootP1True1(){
+          if(bullets1[0].y1>500){
+            shoot=true;
+            return shoot;
+          }
+        }
+        function isShootP1True2(){
+          if(bullets1[0].y1<450 && bullets1[1].y1>500){
+            shoot=true;
+            return shoot;
+          }
+        }
+        function isShootP1True3(){
+          if(bullets1[0].y1<450 && bullets1[1].y1<450 && bullets1[2].y1>500){
+            shoot=true;
+            return shoot;
+          }
+        }
+        function isShootP2True1(){
+          if(bullets2[0].y5<100){
+            shoot2=true;
+            return shoot2;
+          }
+        }
+        function isShootP2True2(){
+          if(bullets2[0].y5>200 && bullets2[1].y5<100){
+            shoot2=true;
+            return shoot2;
+          }
+        }
+        function isShootP2True3(){
+          if(bullets2[0].y5>200 && bullets2[1].y5>200 && bullets2[2].y5<100){
+            shoot2=true;
+            return shoot2;
+          }
+        }
+        //below is the check to see who loses.
+        if(health1<=0 || health2<=0){
+          level=2;
+        }
+      }
+
+
+    </script>
+  </body>
+</html>
